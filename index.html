@@ -1,32 +1,32 @@
-html
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<html lang="es" translate="no" class="h-full bg-slate-950 text-slate-100 select-none">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema ARC/CDC - Simulador de Métrica Regularizada</title>
+  <title>ARC/CDC Unified Field Engine - SECURE PRO v3.6</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; user-select: none; -webkit-user-select: none; }
     code, .mono { font-family: 'JetBrains Mono', monospace; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500 selection:text-slate-950">
 
-  <!-- ENCABEZADO DE AUTORÍA E IDENTIDAD DE DOMINIO INVIOLABLE -->
+  <!-- ENCABEZADO DE AUTORÍA E IDENTIDAD DE DOMINIO -->
   <header class="border-b border-cyan-500/20 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div class="p-2.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-400">
-          <i class="fa-solid fa-atom text-2xl animate-spin-slow"></i>
+          <i class="fa-solid fa-shield-halved text-2xl"></i>
         </div>
         <div>
           <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
             ARC / CDC Unified Field Engine
-            <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">v3.6-STABLE</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">SECURE-PRO</span>
           </h1>
           <p class="text-xs text-slate-400 font-mono">
             AUTOR: <strong class="text-cyan-300">Andrés Ñáñez Sierra</strong> | GITHUB: <span class="text-amber-400">andres7nanez3.6</span>
@@ -36,24 +36,24 @@ html
 
       <!-- SELLO DE DERECHOS Y REGISTRO DNDA -->
       <div class="flex flex-wrap items-center gap-2 text-xs font-mono bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
-        <span class="text-slate-400"><i class="fa-solid fa-shield-halved text-emerald-400 mr-1"></i> DNDA:</span>
+        <span class="text-slate-400"><i class="fa-solid fa-lock text-emerald-400 mr-1"></i> DNDA:</span>
         <span class="bg-slate-800 px-2 py-1 rounded text-cyan-300">1-2026-11979</span>
         <span class="bg-slate-800 px-2 py-1 rounded text-cyan-300">1-2026-126301</span>
       </div>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL / SIMULADOR INTERACTIVO -->
+  <!-- CONTENIDO PRINCIPAL / SIMULADOR PROTEGIDO -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
     <!-- PANEL DE CONTROL Y PARÁMETROS -->
-    <section class="lg:col-span-4 bg-slate-900/50 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between gap-6">
+    <section class="lg:col-span-4 bg-slate-900/50 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between gap-6 shadow-2xl">
       <div>
         <div class="border-b border-slate-800 pb-3 mb-4">
           <h2 class="text-base font-bold text-slate-200 flex items-center gap-2">
-            <i class="fa-solid fa-sliders text-cyan-400"></i> Parámetros de Campo CDC
+            <i class="fa-solid fa-sliders text-cyan-400"></i> Controles del Campo CDC
           </h2>
-          <p class="text-xs text-slate-400 mt-1">Ajuste de variables en tiempo real para evaluar el comportamiento en el nodo $r \to 0$.</p>
+          <p class="text-xs text-slate-400 mt-1">Interfaz protegida de visualización y modulación paramétrica.</p>
         </div>
 
         <div class="space-y-5">
@@ -65,27 +65,22 @@ html
             </div>
             <input type="range" id="r-slider" min="0" max="10" step="0.01" value="0"
               class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400">
-            <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-              <span>0.00 (Origen Origen Absolute)</span>
-              <span>10.00</span>
-            </div>
           </div>
 
-          <!-- CONSTANTE TILDEN (n_tilde) -->
+          <!-- CONSTANTE TILDEN (ñ) -->
           <div>
             <div class="flex justify-between text-xs font-mono mb-1">
               <span class="text-slate-300">Constante Tilden (ñ):</span>
-              <span class="text-amber-400 font-bold font-mono">3.6 (Universal)</span>
+              <span id="n-val" class="text-amber-400 font-bold">3.60</span>
             </div>
-            <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80 text-xs text-slate-400">
-              <p>Constante adimensional de re-normalización espacial. Evita la singularidad en el centro gravitacional.</p>
-            </div>
+            <input type="range" id="n-slider" min="0" max="5" step="0.1" value="3.6"
+              class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400">
           </div>
 
           <!-- FRECUENCIA BASE (f0) -->
           <div>
             <div class="flex justify-between text-xs font-mono mb-1">
-              <span class="text-slate-300">Frecuencia Base (f0):</span>
+              <span class="text-slate-300">Frecuencia Resonante (f0):</span>
               <span id="f0-val" class="text-emerald-400 font-bold">117.072 Hz</span>
             </div>
             <input type="range" id="f0-slider" min="50" max="200" step="0.001" value="117.072"
@@ -95,7 +90,7 @@ html
           <!-- MASA DEL NODO (M) -->
           <div>
             <div class="flex justify-between text-xs font-mono mb-1">
-              <span class="text-slate-300">Factor de Masa / Densidad (2GM/c²):</span>
+              <span class="text-slate-300">Factor de Masa / Densidad (M):</span>
               <span id="m-val" class="text-purple-400 font-bold">4.60</span>
             </div>
             <input type="range" id="m-slider" min="0.1" max="10" step="0.1" value="4.6"
@@ -104,131 +99,145 @@ html
         </div>
       </div>
 
-      <!-- MONITORES DE ESTADO EN TIEMPO REAL -->
+      <!-- MONITORES Y BOTÓN DE EXPORTACIÓN -->
       <div class="space-y-3 pt-4 border-t border-slate-800">
         <div class="p-3 bg-slate-950/80 rounded-xl border border-cyan-500/30 flex items-center justify-between">
-          <span class="text-xs font-mono text-slate-400">Métrica ARC g₀₀(r):</span>
+          <span class="text-xs font-mono text-slate-400">Métrica ARC g00(r):</span>
           <span id="g00-arc-out" class="text-sm font-bold font-mono text-cyan-400">-0.277</span>
         </div>
         <div class="p-3 bg-slate-950/80 rounded-xl border border-rose-500/30 flex items-center justify-between">
-          <span class="text-xs font-mono text-slate-400">Métrica Clásica g₀₀(r):</span>
+          <span class="text-xs font-mono text-slate-400">Métrica Clásica g00(r):</span>
           <span id="g00-classic-out" class="text-sm font-bold font-mono text-rose-400">-∞ (Singular)</span>
         </div>
         <div id="status-badge" class="p-2.5 rounded-xl text-xs font-mono text-center font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-          ✓ ESTADO: Estabilidad Métrico-Resonante Garantizada
+          ✓ ESTABILIDAD METRICA GARANTIZADA
         </div>
+
+        <!-- BOTÓN DE EXPORTACIÓN CERTIFICADA JSON -->
+        <button id="export-btn" class="w-full py-3 px-4 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/40 rounded-xl text-cyan-300 font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-file-arrow-down"></i> Exportar Reporte Certificado (JSON)
+        </button>
       </div>
     </section>
 
-    <!-- VISUALIZACIÓN GRÁFICA COMPARATIVA -->
+    <!-- ÁREA DE VISUALIZACIÓN GRÁFICA (2D + 3D) -->
     <section class="lg:col-span-8 flex flex-col gap-6">
       
-      <!-- LEYENDA TÉCNICA DE FÓRMULAS -->
+      <!-- FÓRMULAS -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="p-4 bg-slate-900/50 border border-cyan-500/20 rounded-2xl">
           <h3 class="text-xs font-bold text-cyan-400 font-mono uppercase tracking-wider mb-2">
             Métrica Regularizada ARC/CDC (Andrés Ñáñez)
           </h3>
           <p class="font-mono text-sm text-slate-200 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-            g₀₀(r) = - (1 - (2GM / (c² · (r + 3.6))))
+            g00(r) = - (1 - M / (r + ñ))
           </p>
-          <p class="text-xs text-slate-400 mt-2">
-            Resuelve la singularidad en $r=0$. Evaluación en origen: <strong class="text-cyan-300">g₀₀(0) = -0.277</strong> (Finito).
-          </p>
+          <p class="text-xs text-slate-400 mt-2">Elimina la singularidad gravitacional en el origen.</p>
         </div>
 
         <div class="p-4 bg-slate-900/50 border border-rose-500/20 rounded-2xl">
           <h3 class="text-xs font-bold text-rose-400 font-mono uppercase tracking-wider mb-2">
-            Métrica Clásica de Schwarzschild
+            Schwarzschild Clásico
           </h3>
           <p class="font-mono text-sm text-slate-200 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-            g₀₀(r) = - (1 - (2GM / (c² · r)))
+            g00(r) = - (1 - M / r)
           </p>
-          <p class="text-xs text-slate-400 mt-2">
-            Diverge hacia el infinito negativo en $r \to 0$. Colapso matemático y físico.
-          </p>
+          <p class="text-xs text-slate-400 mt-2">Diverge hacia el infinito negativo en r -> 0.</p>
         </div>
       </div>
 
-      <!-- LIENZO DE GRÁFICA COMPARATIVA -->
-      <div class="flex-1 bg-slate-900/50 border border-slate-800 rounded-2xl p-4 sm:p-6 flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-            <i class="fa-solid fa-chart-line text-cyan-400"></i> Comportamiento de la Métrica en el Cerca del Origen
-          </h2>
-          <span class="text-xs font-mono text-slate-400">Eje X: Radio Radial (r) | Eje Y: g₀₀(r)</span>
-        </div>
-        <div class="relative flex-1 w-full min-h-[300px]">
+      <!-- GRÁFICA 2D -->
+      <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 sm:p-6 flex flex-col">
+        <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2 mb-4">
+          <i class="fa-solid fa-chart-line text-cyan-400"></i> Comportamiento Curvatura Radial (g00 vs r)
+        </h2>
+        <div class="relative w-full h-[250px]">
           <canvas id="metricChart"></canvas>
         </div>
       </div>
+
+      <!-- SUPERFICIE 3D -->
+      <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 sm:p-6 flex flex-col">
+        <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-cube text-amber-400"></i> Topología Espaciotemporal 3D (Simulador de Campo)
+        </h2>
+        <p class="text-xs text-slate-400 mb-4">Inspección tridimensional del pozo gravitacional protegido.</p>
+        <div id="plotly-3d-container" class="w-full h-[320px] rounded-xl overflow-hidden bg-slate-950"></div>
+      </div>
+
     </section>
 
   </main>
 
-  <!-- PIE DE PÁGINA CON MARCA DE AGUA INMUTABLE -->
+  <!-- PIE DE PÁGINA -->
   <footer class="border-t border-slate-800 bg-slate-950/80 py-4 mt-auto">
     <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-mono flex flex-col sm:flex-row justify-between items-center gap-2">
-      <p>© 2026 ARCHITECTURE OF UNIFIED FIELD REDUNDANCY (ARC/CDC) - TODOS LOS DERECHOS RESERVADOS.</p>
-      <p class="text-slate-400">DESARROLLADO POR <strong class="text-cyan-400">ANDRÉS ÑÁÑEZ SIERRA</strong> (@andres7nanez3.6)</p>
+      <p>© 2026 ARCHITECTURE OF UNIFIED FIELD REDUNDANCY (ARC/CDC) - DNDA 1-2026-11979 / 1-2026-126301</p>
+      <p class="text-slate-400">AUTOR: <strong class="text-cyan-400">ANDRÉS ÑÁÑEZ SIERRA</strong></p>
     </div>
   </footer>
 
-  <!-- SCRIPT DE LÓGICA DE SIMULACIÓN -->
+  <!-- SCRIPT DE BLINDAJE Y LÓGICA -->
   <script>
-    // Inicialización de variables y canvas
+    // --- CAPA DE SEGURIDAD ---
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('keydown', event => {
+      if (event.key === 'F12' || (event.ctrlKey && event.shiftKey && event.key === 'I') || (event.ctrlKey && event.key === 'U')) {
+        event.preventDefault();
+        alert('Acción bloqueada por seguridad y protección intelectual DNDA.');
+      }
+    });
+
+    // --- LÓGICA DE SIMULACIÓN ---
     const rSlider = document.getElementById('r-slider');
+    const nSlider = document.getElementById('n-slider');
     const f0Slider = document.getElementById('f0-slider');
     const mSlider = document.getElementById('m-slider');
 
     const rVal = document.getElementById('r-val');
+    const nVal = document.getElementById('n-val');
     const f0Val = document.getElementById('f0-val');
     const mVal = document.getElementById('m-val');
 
     const g00ArcOut = document.getElementById('g00-arc-out');
     const g00ClassicOut = document.getElementById('g00-classic-out');
     const statusBadge = document.getElementById('status-badge');
+    const exportBtn = document.getElementById('export-btn');
 
-    const ñ = 3.6; // Constante de Tilden
-
-    // Configuración de la gráfica con Chart.js
     const ctx = document.getElementById('metricChart').getContext('2d');
     
-    // Generación del dataset inicial
-    function generateData(M) {
+    function generate2DData(M, n_val) {
       const labels = [];
       const arcData = [];
       const classicData = [];
 
       for (let r = 0; r <= 10; r += 0.1) {
         labels.push(r.toFixed(1));
-        
-        // Métrica ARC/CDC regularizada
-        const g00_arc = -(1 - (M / (r + ñ)));
+        const g00_arc = -(1 - (M / (r + n_val)));
         arcData.push(g00_arc);
 
-        // Métrica clásica (evitando división por 0 exacta para renderizado)
         if (r === 0) {
-          classicData.push(null); // Singularidad
+          classicData.push(null);
         } else {
           const g00_classic = -(1 - (M / r));
-          classicData.push(g00_classic < -10 ? -10 : g00_classic); // Cota visual
+          classicData.push(g00_classic < -12 ? -12 : g00_classic);
         }
       }
-
       return { labels, arcData, classicData };
     }
 
-    const initialData = generateData(parseFloat(mSlider.value));
+    const initialM = parseFloat(mSlider.value);
+    const initialN = parseFloat(nSlider.value);
+    const initData = generate2DData(initialM, initialN);
 
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: initialData.labels,
+        labels: initData.labels,
         datasets: [
           {
-            label: 'Métrica ARC/CDC (ñ = 3.6) - Andrés Ñáñez',
-            data: initialData.arcData,
+            label: 'ARC/CDC (Regularizada)',
+            data: initData.arcData,
             borderColor: '#22d3ee',
             backgroundColor: 'rgba(34, 211, 238, 0.1)',
             borderWidth: 3,
@@ -236,8 +245,8 @@ html
             tension: 0.4
           },
           {
-            label: 'Métrica Clásica de Schwarzschild (Singular)',
-            data: initialData.classicData,
+            label: 'Schwarzschild (Clásica)',
+            data: initData.classicData,
             borderColor: '#f43f5e',
             borderWidth: 2,
             borderDash: [5, 5],
@@ -250,68 +259,121 @@ html
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: {
-            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } },
-            title: { display: true, text: 'Radio Radial (r)', color: '#94a3b8' }
-          },
-          y: {
-            min: -3,
-            max: 1,
-            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } },
-            title: { display: true, text: 'Componente g₀₀(r)', color: '#94a3b8' }
-          }
+          x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } } },
+          y: { min: -4, max: 1, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } } }
         },
-        plugins: {
-          legend: {
-            labels: { color: '#e2e8f0', font: { family: 'Plus Jakarta Sans', weight: 'bold' } }
-          }
-        }
+        plugins: { legend: { labels: { color: '#e2e8f0', font: { family: 'Plus Jakarta Sans', weight: 'bold' } } } }
       }
     });
 
-    // Función de actualización interactiva
+    function updatePlotly3D(M, n_val) {
+      let rValues = [];
+      let thetaValues = [];
+      let zValues = [];
+
+      for (let i = 0; i <= 20; i++) rValues.push(i * 0.5);
+      for (let j = 0; j <= 20; j++) thetaValues.push((j / 20) * 2 * Math.PI);
+
+      for (let rIdx = 0; rIdx < rValues.length; rIdx++) {
+        let r = rValues[rIdx];
+        let row = [];
+        for (let thIdx = 0; thIdx < thetaValues.length; thIdx++) {
+          let g00 = -(1 - (M / (r + n_val)));
+          row.push(g00);
+        }
+        zValues.push(row);
+      }
+
+      let data3D = [{ z: zValues, type: 'surface', colorscale: 'Viridis', showscale: false }];
+      let layout3D = {
+        autosize: true, margin: { l: 0, r: 0, b: 0, t: 0 },
+        paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+        scene: {
+          xaxis: { title: 'X', color: '#94a3b8', gridcolor: '#334155' },
+          yaxis: { title: 'Y', color: '#94a3b8', gridcolor: '#334155' },
+          zaxis: { title: 'g00', color: '#94a3b8', range: [-4, 1], gridcolor: '#334155' }
+        }
+      };
+
+      Plotly.react('plotly-3d-container', data3D, layout3D, {responsive: true, displayModeBar: false});
+    }
+
     function updateSimulation() {
       const r = parseFloat(rSlider.value);
+      const n_val = parseFloat(nSlider.value);
       const f0 = parseFloat(f0Slider.value);
       const M = parseFloat(mSlider.value);
 
       rVal.textContent = r.toFixed(2);
+      nVal.textContent = n_val.toFixed(2);
       f0Val.textContent = f0.toFixed(3) + ' Hz';
       mVal.textContent = M.toFixed(2);
 
-      // Cálculos directos de la métrica
-      const g00_arc = -(1 - (M / (r + ñ)));
+      const g00_arc = -(1 - (M / (r + n_val)));
       g00ArcOut.textContent = g00_arc.toFixed(3);
 
-      if (r === 0) {
-        g00ClassicOut.textContent = "-∞ (Singularidad Colapsada)";
+      if (r === 0 && n_val === 0) {
+        g00ClassicOut.textContent = "-∞ (COLAPSO TOTAL)";
+        statusBadge.className = "p-2.5 rounded-xl text-xs font-mono text-center font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30";
+        statusBadge.innerHTML = "⚠ ALERTA: Singularidad clásica alcanzada en r = 0 (ñ = 0)";
+      } else if (r === 0) {
+        g00ClassicOut.textContent = "-∞ (Singularidad Clásica)";
         statusBadge.className = "p-2.5 rounded-xl text-xs font-mono text-center font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-        statusBadge.innerHTML = "✓ SISTEMA ARC REGULARIZADO: Singularidad suprimida exitosamente en r = 0";
+        statusBadge.innerHTML = `✓ ARC REGULARIZADO: Finito en r = 0 (ñ = ${n_val.toFixed(1)})`;
       } else {
         const g00_classic = -(1 - (M / r));
         g00ClassicOut.textContent = g00_classic.toFixed(3);
         statusBadge.className = "p-2.5 rounded-xl text-xs font-mono text-center font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30";
-        statusBadge.innerHTML = "i SISTEMA EN RANGO DILATADO (r > 0)";
+        statusBadge.innerHTML = "i SISTEMA EN RANGO ESPACIAL DILATADO";
       }
 
-      // Actualizar gráfica
-      const newData = generateData(M);
+      const newData = generate2DData(M, n_val);
       chart.data.labels = newData.labels;
       chart.data.datasets[0].data = newData.arcData;
       chart.data.datasets[1].data = newData.classicData;
       chart.update('none');
+
+      updatePlotly3D(M, n_val);
     }
 
-    // Event Listeners para interacción fluida
     rSlider.addEventListener('input', updateSimulation);
+    nSlider.addEventListener('input', updateSimulation);
     f0Slider.addEventListener('input', updateSimulation);
     mSlider.addEventListener('input', updateSimulation);
 
-    // Ejecución inicial
+    // --- EXPORTACIÓN CERTIFICADA JSON ---
+    exportBtn.addEventListener('click', () => {
+      const reportData = {
+        proyecto: "ARC / CDC Unified Field Engine",
+        autor: "Andrés Ñáñez Sierra",
+        registros_legales: {
+          dnda_1: "1-2026-11979",
+          dnda_2: "1-2026-126301"
+        },
+        timestamp_utc: new Date().toISOString(),
+        parametros_evaluados: {
+          radio_radial_r: parseFloat(rSlider.value),
+          constante_tilden_n: parseFloat(nSlider.value),
+          frecuencia_base_f0: parseFloat(f0Slider.value),
+          factor_masa_m: parseFloat(mSlider.value)
+        },
+        resultados_metricos: {
+          metrica_arc_g00: parseFloat(g00ArcOut.textContent),
+          estado_sistema: statusBadge.textContent.trim()
+        },
+        certificacion: "Reporte generado de forma segura desde el nodo oficial del simulador."
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(reportData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `ARC_CDC_Reporte_${Date.now()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    });
+
     updateSimulation();
   </script>
 </body>
 </html>
-```
