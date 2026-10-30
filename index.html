@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ARC/CDC Unified Field Engine - SECURE PRO v3.6</title>
+  <title>ARC/CDC Unified Field Engine - TESTBENCH v3.6</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
@@ -16,17 +16,17 @@
 </head>
 <body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500 selection:text-slate-950">
 
-  <!-- ENCABEZADO DE AUTORÍA E IDENTIDAD DE DOMINIO -->
+  <!-- ENCABEZADO INSTITUCIONAL -->
   <header class="border-b border-cyan-500/20 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div class="p-2.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-400">
-          <i class="fa-solid fa-shield-halved text-2xl"></i>
+          <i class="fa-solid fa-atom text-2xl"></i>
         </div>
         <div>
           <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
             ARC / CDC Unified Field Engine
-            <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">SECURE-PRO</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">TESTBENCH v3.6</span>
           </h1>
           <p class="text-xs text-slate-400 font-mono">
             AUTOR: <strong class="text-cyan-300">Andrés Ñáñez Sierra</strong> | GITHUB: <span class="text-amber-400">andres7nanez3.6</span>
@@ -34,7 +34,7 @@
         </div>
       </div>
 
-      <!-- SELLO DE DERECHOS Y REGISTRO DNDA -->
+      <!-- RESGUARDO DNDA -->
       <div class="flex flex-wrap items-center gap-2 text-xs font-mono bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
         <span class="text-slate-400"><i class="fa-solid fa-lock text-emerald-400 mr-1"></i> DNDA:</span>
         <span class="bg-slate-800 px-2 py-1 rounded text-cyan-300">1-2026-11979</span>
@@ -43,7 +43,7 @@
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL / SIMULADOR PROTEGIDO -->
+  <!-- CONTENIDO PRINCIPAL -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
     <!-- PANEL DE CONTROL Y PARÁMETROS -->
@@ -51,9 +51,9 @@
       <div>
         <div class="border-b border-slate-800 pb-3 mb-4">
           <h2 class="text-base font-bold text-slate-200 flex items-center gap-2">
-            <i class="fa-solid fa-sliders text-cyan-400"></i> Controles del Campo CDC
+            <i class="fa-solid fa-sliders text-cyan-400"></i> Controles del Operador CDC
           </h2>
-          <p class="text-xs text-slate-400 mt-1">Interfaz protegida de visualización y modulación paramétrica.</p>
+          <p class="text-xs text-slate-400 mt-1">Banco de pruebas numéricas en tiempo real.</p>
         </div>
 
         <div class="space-y-5">
@@ -99,7 +99,7 @@
         </div>
       </div>
 
-      <!-- MONITORES Y BOTÓN DE EXPORTACIÓN -->
+      <!-- MONITORES Y BOTÓN DE EXPORTACIÓN FUNCIONAL -->
       <div class="space-y-3 pt-4 border-t border-slate-800">
         <div class="p-3 bg-slate-950/80 rounded-xl border border-cyan-500/30 flex items-center justify-between">
           <span class="text-xs font-mono text-slate-400">Métrica ARC g00(r):</span>
@@ -110,29 +110,39 @@
           <span id="g00-classic-out" class="text-sm font-bold font-mono text-rose-400">-∞ (Singular)</span>
         </div>
         <div id="status-badge" class="p-2.5 rounded-xl text-xs font-mono text-center font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-          ✓ ESTABILIDAD METRICA GARANTIZADA
+          ✓ ESTABILIDAD MÉTRICA ACTIVA
         </div>
 
-        <!-- BOTÓN DE EXPORTACIÓN CERTIFICADA JSON -->
+        <!-- BOTÓN DE EXPORTACIÓN DE TELEMETRÍA (NEUTRAL Y TÉCNICO) -->
         <button id="export-btn" class="w-full py-3 px-4 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/40 rounded-xl text-cyan-300 font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
-          <i class="fa-solid fa-file-arrow-down"></i> Exportar Reporte Certificado (JSON)
+          <i class="fa-solid fa-file-code"></i> Exportar Registro de Operación (JSON)
         </button>
       </div>
     </section>
 
-    <!-- ÁREA DE VISUALIZACIÓN GRÁFICA (2D + 3D) -->
+    <!-- ÁREA DE VISUALIZACIÓN Y FUNDAMENTOS -->
     <section class="lg:col-span-8 flex flex-col gap-6">
       
+      <!-- NOTA TÉCNICA SOBRE EL OPERADOR -->
+      <div class="p-4 bg-slate-900/50 border border-amber-500/30 rounded-2xl">
+        <h3 class="text-xs font-bold text-amber-400 font-mono uppercase tracking-wider mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-compass-drafting"></i> Nota del Operador: Rol de la Constante ($\tilde{n} = 3.6$)
+        </h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Este banco de pruebas evalúa el comportamiento operativo de la constante <strong class="text-amber-300">$\tilde{n} = 3.6$</strong> como factor de regularización métrica. Su deducción teórica y vinculación con redes topológicas se fundamenta de manera íntegra en la memoria escrita del libro blanco del proyecto.
+        </p>
+      </div>
+
       <!-- FÓRMULAS -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="p-4 bg-slate-900/50 border border-cyan-500/20 rounded-2xl">
           <h3 class="text-xs font-bold text-cyan-400 font-mono uppercase tracking-wider mb-2">
-            Métrica Regularizada ARC/CDC (Andrés Ñáñez)
+            Métrica Regularizada ARC/CDC
           </h3>
           <p class="font-mono text-sm text-slate-200 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
             g00(r) = - (1 - M / (r + ñ))
           </p>
-          <p class="text-xs text-slate-400 mt-2">Elimina la singularidad gravitacional en el origen.</p>
+          <p class="text-xs text-slate-400 mt-2">Evalúa la eliminación del colapso en el origen.</p>
         </div>
 
         <div class="p-4 bg-slate-900/50 border border-rose-500/20 rounded-2xl">
@@ -149,7 +159,7 @@
       <!-- GRÁFICA 2D -->
       <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 sm:p-6 flex flex-col">
         <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2 mb-4">
-          <i class="fa-solid fa-chart-line text-cyan-400"></i> Comportamiento Curvatura Radial (g00 vs r)
+          <i class="fa-solid fa-chart-line text-cyan-400"></i> Graficación de Curvatura Radial (g00 vs r)
         </h2>
         <div class="relative w-full h-[250px]">
           <canvas id="metricChart"></canvas>
@@ -161,7 +171,7 @@
         <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2 mb-2">
           <i class="fa-solid fa-cube text-amber-400"></i> Topología Espaciotemporal 3D (Simulador de Campo)
         </h2>
-        <p class="text-xs text-slate-400 mb-4">Inspección tridimensional del pozo gravitacional protegido.</p>
+        <p class="text-xs text-slate-400 mb-4">Inspección tridimensional del funcionamiento del motor.</p>
         <div id="plotly-3d-container" class="w-full h-[320px] rounded-xl overflow-hidden bg-slate-950"></div>
       </div>
 
@@ -341,7 +351,7 @@
     f0Slider.addEventListener('input', updateSimulation);
     mSlider.addEventListener('input', updateSimulation);
 
-    // --- EXPORTACIÓN CERTIFICADA JSON ---
+    // --- EXPORTACIÓN DE REGISTRO OPERATIVO JSON (SIN PRETENSIONES) ---
     exportBtn.addEventListener('click', () => {
       const reportData = {
         proyecto: "ARC / CDC Unified Field Engine",
@@ -351,23 +361,23 @@
           dnda_2: "1-2026-126301"
         },
         timestamp_utc: new Date().toISOString(),
-        parametros_evaluados: {
+        parametros_operativos: {
           radio_radial_r: parseFloat(rSlider.value),
           constante_tilden_n: parseFloat(nSlider.value),
-          frecuencia_base_f0: parseFloat(f0Slider.value),
+          frecuencia_base_f0_hz: parseFloat(f0Slider.value),
           factor_masa_m: parseFloat(mSlider.value)
         },
-        resultados_metricos: {
+        telemetria_resultado: {
           metrica_arc_g00: parseFloat(g00ArcOut.textContent),
           estado_sistema: statusBadge.textContent.trim()
         },
-        certificacion: "Reporte generado de forma segura desde el nodo oficial del simulador."
+        nota: "Registro de operación y telemetría extraído directamente del banco de pruebas interactivo."
       };
 
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(reportData, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `ARC_CDC_Reporte_${Date.now()}.json`);
+      downloadAnchor.setAttribute("download", `ARC_CDC_Telemetria_${Date.now()}.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
