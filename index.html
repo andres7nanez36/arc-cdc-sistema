@@ -1,172 +1,148 @@
-<!-- ========================================== -->
-<!-- PANEL DE VALIDACIÓN EXPERIMENTAL (CERN/CMS) -->
-<!-- ========================================== -->
-<div id="panel-validacion-cern" style="background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 15px; margin: 20px 0; color: #f8fafc; font-family: monospace;">
-  <h3 style="margin-top: 0; color: #38bdf8; font-size: 14px;">🧪 Validación Experimental: Datos Abiertos (CERN/CMS)</h3>
-  <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Ingrese o pegue el formato de datos o telemetría para verificación de convergencia:</p>
-  
-  <textarea id="input-datos-cern" placeholder="Pegue aquí el formato de datos (ej. dataset_root, flujos, eventos)..." style="width: 100%; height: 70px; background: #020617; border: 1px solid #475569; color: #38bdf8; padding: 8px; border-radius: 6px; font-size: 11px; resize: vertical; box-sizing: border-box;"></textarea>
-  
-  <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
-    <button id="btn-ejecutar-verificacion" style="background: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold;">Ejecutar Verificación</button>
-    <span id="estado-sistema-cern" style="font-size: 11px; color: #fbbf24;">Sistema protegido - En espera de autorización...</span>
-  </div>
-
-  <div id="resultado-verificacion" style="margin-top: 10px; background: #020617; border: 1px solid #1e293b; padding: 8px; border-radius: 6px; font-size: 11px; display: none;">
-    <!-- Resultado del análisis -->
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MÓDULO DE CONTROL EXCLUSIVO POR VOZ (Caja Negra) -->
-<!-- ========================================== -->
-<script>
-  class ControlVozProyectoConfi {
-    constructor() {
-      this.activo = false;
-      this.ocupado = false;
-      this.reconocedor = null;
-      this.llaveSeguridad = "tilden-3.6"; // Llave base de validación
-      this.firmaAutoridad = "soy andrés"; // Firma vocal obligatoria de exclusividad
-      this.cajaNegra = []; // Historial forense interno aislado
-      this.inicializarReconocimiento();
-      this.inicializarInterfazUI();
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BANCO DE PRUEBAS: CONSTANTE DE TILDEN</title>
+  <style>
+    body {
+      background-color: #050b14;
+      color: #f8fafc;
+      font-family: monospace, sans-serif;
+      margin: 0;
+      padding: 15px;
     }
-
-    registrarCajaNegra(evento, detalle) {
-      const registro = {
-        timestamp: new Date().toISOString(),
-        evento: evento,
-        detalle: detalle
-      };
-      this.cajaNegra.push(registro);
-      if (this.cajaNegra.length > 50) this.cajaNegra.shift();
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
     }
-
-    inicializarReconocimiento() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        console.warn("El navegador no soporta reconocimiento de voz nativo.");
-        return;
-      }
-
-      this.reconocedor = new SpeechRecognition();
-      this.reconocedor.lang = 'es-CO';
-      this.reconocedor.continuous = true;
-      this.reconocedor.interimResults = false;
-
-      this.reconocedor.onresult = (event) => {
-        const texto = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-        console.log("🎙️ [Caja Negra] Audio capturado:", texto);
-        this.registrarCajaNegra("AUDIO_CAPTURADO", texto);
-        this.procesarComando(texto);
-      };
-
-      this.reconocedor.onerror = (event) => {
-        this.registrarCajaNegra("ERROR_RECONOCIMIENTO", event.error);
-      };
-
-      this.reconocedor.onend = () => {
-        if (this.activo) {
-          try { this.reconocedor.start(); } catch (e) {}
-        }
-      };
+    header {
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
     }
-
-    iniciar() {
-      this.activo = true;
-      try {
-        this.reconocedor.start();
-        console.log("🟢 Sistema de escucha exclusivo activado.");
-        this.registrarCajaNegra("SISTEMA_INICIADO", "Escucha exclusiva activa");
-      } catch (e) {
-        console.log("El reconocedor ya estaba activo.");
-      }
+    h1 {
+      font-size: 15px;
+      color: #38bdf8;
+      margin: 0 0 5px 0;
     }
-
-    detener() {
-      this.activo = false;
-      try { this.reconocedor.stop(); } catch (e) {}
-      console.log("🔴 Sistema de escucha detenido.");
-      this.registrarCajaNegra("SISTEMA_DETENIDO", "Corte manual");
+    .meta {
+      font-size: 10px;
+      color: #94a3b8;
     }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 12px;
+      color: #38bdf8;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .control-group {
+      margin-bottom: 10px;
+    }
+    .control-group label {
+      display: block;
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-bottom: 3px;
+    }
+    .control-group input[type="range"] {
+      width: 100%;
+      accent-color: #38bdf8;
+    }
+    .readout {
+      font-size: 11px;
+      color: #38bdf8;
+      text-align: right;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .badge-success { background: #064e3b; color: #34d399; border: 1px solid #059669; }
+    .badge-danger { background: #7f1d1d; color: #f87171; border: 1px solid #dc2626; }
+    textarea {
+      width: 100%;
+      height: 60px;
+      background: #020617;
+      border: 1px solid #334155;
+      color: #38bdf8;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    button {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    button:hover { background: #0369a1; }
+    .canvas-box {
+      background: #020617;
+      border: 1px solid #1e293b;
+      height: 140px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
 
-    ejecutarVerificacionCERN() {
-      const inputData = document.getElementById('input-datos-cern')?.value || "Datos por defecto - Muestras CERN";
-      const estadoSpan = document.getElementById('estado-sistema-cern');
-      const resultadoDiv = document.getElementById('resultado-verificacion');
+  <div class="container">
+    <header>
+      <h1>BANCO DE PRUEBAS: CONSTANTE DE TILDEN</h1>
+      <div class="meta">
+        Autor: Andrés Ñáñez Sierra | DNDA: 1-2026-11979 / 1-2026-126301
+      </div>
+    </header>
 
-      if (estadoSpan) estadoSpan.innerText = "⏳ Procesando matriz de coherencia (Autorizado)...";
+    <!-- PARÁMETROS DE CAMPO -->
+    <div class="card">
+      <div class="card-title">⚙️ PARÁMETROS DE CAMPO</div>
       
-      setTimeout(() => {
-        const convergenciaFinit = (Math.random() * 0.05 + 0.23).toFixed(3);
-        
-        if (resultadoDiv) {
-          resultadoDiv.style.display = 'block';
-          resultadoDiv.innerHTML = `
-            <strong style="color: #4ade80;">✔ VERIFICACIÓN EXCLUSIVA EXITOSA</strong><br>
-            <span style="color: #94a3b8;">Entrada analizada:</span> ${inputData.substring(0, 40)}...<br>
-            <span style="color: #38bdf8;">Constante aplicada:</span> Ñ = 3.6 | F0 = 117.072 Hz<br>
-            <span style="color: #fbbf24;">Resultado Convergencia:</span> ${convergenciaFinit} (Acceso validado por voz autorizada / Q.E.D.)
-          `;
-        }
-        if (estadoSpan) estadoSpan.innerText = "✅ Verificación autorizada completada.";
-        this.registrarCajaNegra("VERIFICACION_EXCLUSIVA_CERN", "Ejecutado por voz titular. Convergencia: " + convergenciaFinit);
-      }, 600);
-    }
+      <div class="control-group">
+        <label>Coordenada Radial (r): <span id="val-r" class="readout">0.00</span></label>
+        <input type="range" id="r-slider" min="0" max="10" step="0.01" value="0">
+      </div>
 
-    inicializarInterfazUI() {
-      window.addEventListener('load', () => {
-        const btnVerificar = document.getElementById('btn-ejecutar-verificacion');
-        if (btnVerificar) {
-          btnVerificar.addEventListener('click', () => {
-            this.ejecutarVerificacionCERN();
-          });
-        }
-      });
-    }
+      <div class="control-group">
+        <label>Constante Tilden (Ñ): <span class="readout">3.60</span></label>
+        <input type="range" disabled value="3.6">
+      </div>
 
-    procesarComando(texto) {
-      // 1. CERROJO DE EMERGENCIA (Freno)
-      if (this.ocupado) {
-        if (texto.includes("alto") || texto.includes("detente")) {
-          this.ocupado = false;
-          this.registrarCajaNegra("FRENO_EMERGENCIA", "Activado por voz titular");
-          alert("⏸️ [SISTEMA]: Freno de emergencia aplicado.");
-        }
-        return;
-      }
+      <div class="control-group">
+        <label>Frecuencia Base (F0): <span class="readout">117.072 Hz</span></label>
+        <input type="range" disabled value="117.072">
+      </div>
 
-      // 2. VALIDACIÓN DE EXCLUSIVIDAD (Debe contener tu firma personal y la llave)
-      const esVozTitular = texto.includes(this.firmaAutoridad);
-      const tieneLlave = texto.includes(this.llaveSeguridad) || (texto.includes("tilden") && texto.includes("3.6"));
+      <div class="control-group">
+        <label>Masa / Carga (M): <span id="val-m" class="readout">1.00</span></label>
+        <input type="range" id="m-slider" min="0.1" max="5.0" step="0.1" value="1.0">
+      </div>
 
-      // 3. COMANDOS PROTEGIDOS
-      if (texto.includes("abrir proyecto confi") || texto.includes("abrir proyecto renacer")) {
-        if (esVozTitular && tieneLlave) {
-          this.iniciar();
-          this.registrarCajaNegra("ACCESO_TITULAR_VALIDADO", "Identidad y llave confirmadas");
-          
-          if (typeof iniciarCampo3D === 'function') {
-            try { iniciarCampo3D(); } catch (e) {}
-          }
-
-          alert("🚀 [SISTEMA]: Identidad verificada (Andrés). Acceso total concedido y topología 3D sincronizada.");
-        } else {
-          this.registrarCajaNegra("INTRUSION_DENEGADA", "Voz no autorizada o llave ausente: " + texto);
-          alert("⛔ [SISTEMA]: Acceso denegado. Se requiere tu firma de voz autorizada.");
-        }
-      }
-      else if (texto.includes("analiza") || texto.includes("verifica") || texto.includes("revisa")) {
-        if (esVozTitular) {
-          this.ejecutarVerificacionCERN();
-        } else {
-          alert("⛔ [SISTEMA]: Comando de análisis denegado. Requiere autorización del titular.");
-        }
-      }
-    }
-  }
-
-  // Instanciar el módulo con exclusividad personal
-  const controlVoz = new ControlVozProyectoConfi();
-</script>
+      <div style="margin-top: 8px; font-size: 11px; display: flex; justify-content: space-between;">
+        <span>Métrica g00(r): <strong id="val-metrica" style="color: #38bdf8;">-6.733</strong></span>
+        <span>Schwarzschild Clásico: <span class="badge badge-danger">∞ (Singular)</span></span>
+      
