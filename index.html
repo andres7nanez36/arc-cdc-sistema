@@ -1,11 +1,11 @@
-<!-- MÓDULO DE CONTROL POR VOZ Y VISUALIZACIÓN 3D (Limpio y Enlazado) -->
+<!-- MÓDULO DE CONTROL POR VOZ Y CAJA NEGRA (Llave limpia y natural) -->
 <script>
   class ControlVozProyectoConfi {
     constructor() {
       this.activo = false;
       this.ocupado = false;
       this.reconocedor = null;
-      this.llaveSeguridad = "Ñ-3.6-SEGV1"; // Llave fija de validación
+      this.llaveSeguridad = "TILDEN-3.6"; // Llave limpia y elegante
       this.cajaNegra = []; // Historial forense interno aislado
       this.inicializarReconocimiento();
     }
@@ -79,33 +79,33 @@
         return;
       }
 
-      // 2. VALIDACIÓN DE LLAVE SEGURA
-      const tieneLlave = texto.includes(this.llaveSeguridad.toLowerCase()) || texto.includes("ñ-3.6-segv1");
+      // 2. VALIDACIÓN DE LA NUEVA LLAVE LIMPIA
+      const tieneLlave = texto.includes("tilden") && (texto.includes("3.6") || texto.includes("tres punto seis"));
 
-      // 3. COMANDOS PRINCIPALES DE APERTURA Y VISUALIZACIÓN 3D
+      // 3. COMANDOS PRINCIPALES DE APERTURA
       if (texto.includes("abrir proyecto confi") || texto.includes("abrir proyecto renacer")) {
         if (tieneLlave) {
           this.iniciar();
-          this.registrarCajaNegra("ACCESO_AUTORIZADO", "Comando y llave segura validados");
+          this.registrarCajaNegra("ACCESO_AUTORIZADO", "Comando y llave TILDEN-3.6 validados");
           
-          // Enlace directo con tu función de campo topológico y curvas en 3D (si existe en tu script principal)
+          // Sincronización con el renderizado 3D si está disponible
           if (typeof iniciarCampo3D === 'function') {
-            try { iniciarCampo3D(); } catch (e) { console.warn("Error al iniciar campo 3D:", e); }
+            try { iniciarCampo3D(); } catch (e) { console.warn("Error al sincronizar campo 3D:", e); }
           }
 
-          alert("🚀 [SISTEMA]: Llave correcta. Campo topológico 3D y curvas sincronizados.");
+          alert("🚀 [SISTEMA]: Llave Tilden 3.6 correcta. Sistema activo y topología 3D sincronizada.");
         } else {
-          this.registrarCajaNegra("ACCESO_DENEGADO", "Intento sin llave o llave incorrecta");
-          alert("⛔ [SISTEMA]: Acceso denegado. Falta la llave segura de validación.");
+          this.registrarCajaNegra("ACCESO_DENEGADO", "Intento sin llave o clave incorrecta");
+          alert("⛔ [SISTEMA]: Acceso denegado. Falta mencionar la llave Tilden 3.6.");
         }
       }
     }
   }
 
-  // Instanciar el módulo limpio y conectado al motor 3D
+  // Instanciar el módulo
   const controlVoz = new ControlVozProyectoConfi();
   
   window.addEventListener('load', () => {
-    console.log("Módulo de voz y visualización 3D listo.");
+    console.log("Módulo de voz con llave limpia listo.");
   });
 </script>
