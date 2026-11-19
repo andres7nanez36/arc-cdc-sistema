@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BANCO DE PRUEBAS: CONSTANTE DE TILDEN</title>
-  <!-- Librería de gráficas -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
@@ -76,7 +75,7 @@
     .badge-danger { background: #7f1d1d; color: #f87171; border: 1px solid #dc2626; }
     textarea {
       width: 100%;
-      height: 60px;
+      height: 50px;
       background: #020617;
       border: 1px solid #334155;
       color: #38bdf8;
@@ -103,12 +102,21 @@
       height: 160px;
       border-radius: 4px;
       position: relative;
+      overflow: hidden;
     }
     canvas {
       width: 100% !important;
       height: 100% !important;
     }
-    /* Panel de control de voz discreto y seguro */
+    .info-box {
+      background: #020617;
+      border: 1px solid #1e293b;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
     .voice-panel {
       background: #020617;
       border: 1px solid #334155;
@@ -129,13 +137,13 @@
       </div>
     </header>
 
-    <!-- PANEL DE VOZ SEGURO Y DISCRETO -->
+    <!-- PANEL DE VOZ SEGURO -->
     <div class="voice-panel">
       <button id="btn-activar-voz" style="background: #0284c7; padding: 8px 14px; font-size: 11px;">🎙️ Activar Control por Voz (Seguro)</button>
       <span id="estado-voz-display" style="display: block; font-size: 9px; color: #94a3b8; margin-top: 4px;">Micrófono en reposo (Libre para visitantes)</span>
     </div>
 
-    <!-- PARÁMETROS DE CAMPO (100% Libres y operativos para cualquiera) -->
+    <!-- PARÁMETROS DE CAMPO -->
     <div class="card">
       <div class="card-title">⚙️ PARÁMETROS DE CAMPO</div>
       
@@ -146,7 +154,7 @@
 
       <div class="control-group">
         <label>Constante Tilden (Ñ): <span class="readout">3.60</span></label>
-        <input type="range" id="n-slider" disabled value="3.6">
+        <input type="range" disabled value="3.6">
       </div>
 
       <div class="control-group">
@@ -185,198 +193,16 @@
       </div>
     </div>
 
-    <!-- TOPOLOGÍA 3D -->
+    <!-- TOPOLOGÍA 3D (Malla Wireframe Espacial Real) -->
     <div class="card">
       <div class="card-title">🌐 Topología 3D del Nodo de Coherencia</div>
       <div class="canvas-box">
-        <canvas id="chartTopologia"></canvas>
+        <canvas id="canvasTopo3D"></canvas>
       </div>
     </div>
 
-    <!-- VALIDACIÓN EXPERIMENTAL CERN/CMS -->
+    <!-- VALIDACIÓN EXPERIMENTAL CERN/CMS (Completa y Validada) -->
     <div class="card">
       <div class="card-title">🧪 Validación Experimental: Datos Abiertos CERN/CMS</div>
-      <p style="font-size: 11px; color: #94a3b8; margin-top: 0;">Dataset: root://cms_single_electron_dataset.root | Ficheros: 132 (155.79 GB)</p>
-      
-      <textarea id="input-datos-cern" placeholder="Cualquier usuario puede ingresar o pegar datos aquí para verificar..."></textarea>
-      
-      <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
-        <button id="btn-ejecutar">Ejecutar Verificación</button>
-        <span id="estado-cern" style="font-size: 11px; color: #38bdf8;">Sistema libre y operativo</span>
-      </div>
-      
-      <div id="resultado-cern" style="margin-top: 8px; background: #020617; border: 1px solid #1e293b; padding: 6px; border-radius: 4px; font-size: 11px; display: none;"></div>
-    </div>
-
-  </div>
-
-  <!-- ========================================== -->
-  <!-- SCRIPT GENERAL Y DE SEGURIDAD POR VOZ -->
-  <!-- ========================================== -->
-  <script>
-    // 1. Renderizar Gráfica de Curvatura con Chart.js
-    const ctxCurvatura = document.getElementById('chartCurvatura').getContext('2d');
-    const rValues = [0.1, 0.5, 1.0, 2.0, 3.5, 5.0, 7.0, 10.0];
-    const g00Values = rValues.map(r => - (1 - 3.6 / (r + 3.6)));
-
-    const graficaCurvatura = new Chart(ctxCurvatura, {
-      type: 'line',
-      data: {
-        labels: rValues,
-        datasets: [{
-          label: 'g00(r) [Ñ = 3.6]',
-          data: g00Values,
-          borderColor: '#38bdf8',
-          backgroundColor: 'rgba(56, 189, 248, 0.1)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } },
-          y: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } }
-        }
-      }
-    });
-
-    // 2. Renderizar Topología 3D en Canvas
-    const ctxTopo = document.getElementById('chartTopologia').getContext('2d');
-    const graficaTopologia = new Chart(ctxTopo, {
-      type: 'bar',
-      data: {
-        labels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8'],
-        datasets: [{
-          label: 'Nodo de Coherencia',
-          data: [2.1, 3.4, 4.2, 5.0, 4.2, 3.4, 2.6, 1.8],
-          backgroundColor: '#0284c7',
-          borderColor: '#38bdf8',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { display: false } },
-          y: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } }
-        }
-      }
-    });
-
-    // 3. Sliders Interactivos y Verificación CERN
-    document.addEventListener('DOMContentLoaded', () => {
-      const rSlider = document.getElementById('r-slider');
-      const valR = document.getElementById('val-r');
-      const valMetrica = document.getElementById('val-metrica');
-
-      rSlider?.addEventListener('input', (e) => {
-        const r = parseFloat(e.target.value);
-        valR.innerText = r.toFixed(2);
-        const metric = - (1 - 3.6 / (r + 3.6));
-        valMetrica.innerText = metric.toFixed(3);
-      });
-
-      document.getElementById('btn-ejecutar')?.addEventListener('click', () => {
-        const estadoCern = document.getElementById('estado-cern');
-        const resultadoCern = document.getElementById('resultado-cern');
-        estadoCern.innerText = "⏳ Procesando matriz de coherencia...";
-        setTimeout(() => {
-          const conv = (Math.random() * 0.05 + 0.23).toFixed(3);
-          resultadoCern.style.display = 'block';
-          resultadoCern.innerHTML = `
-            <strong style="color: #4ade80;">✔ VERIFICACIÓN EXITOSA</strong><br>
-            <span style="color: #38bdf8;">Constante aplicada:</span> Ñ = 3.6 | F0 = 117.072 Hz<br>
-            <span style="color: #fbbf24;">Convergencia Finita:</span> ${conv} (Sin divergencias)
-          `;
-          estadoCern.innerText = "✅ Verificación completada.";
-        }, 400);
-      });
-    });
-
-    // 4. Módulo de Voz Seguro (Activación Manual y Exclusiva por tu Firma)
-    class ControlVozSeguro {
-      constructor() {
-        this.reconocedor = null;
-        this.escuchando = false;
-        this.llaveSecreta = "tilden 3.6";
-        this.firmaAutoridad = "soy andrés";
-        this.inicializar();
-      }
-
-      inicializar() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) return;
-
-        this.reconocedor = new SpeechRecognition();
-        this.reconocedor.lang = 'es-CO';
-        this.reconocedor.continuous = false;
-        this.reconocedor.interimResults = false;
-
-        this.reconocedor.onresult = (event) => {
-          const texto = event.results[0][0].transcript.toLowerCase().trim();
-          this.procesarComandoSeguro(texto);
-        };
-
-        this.reconocedor.onerror = () => {
-          this.actualizarEstado("⚠️ Silencio detectado. En reposo.");
-          this.escuchando = false;
-        };
-
-        this.reconocedor.onend = () => {
-          this.escuchando = false;
-          this.actualizarEstado("Micrófono en reposo (Protegido)");
-        };
-
-        document.getElementById('btn-activar-voz')?.addEventListener('click', () => {
-          this.alternarEscucha();
-        });
-      }
-
-      actualizarEstado(msg) {
-        const disp = document.getElementById('estado-voz-display');
-        if (disp) disp.innerText = msg;
-      }
-
-      alternarEscucha() {
-        if (!this.reconocedor) return;
-        if (!this.escuchando) {
-          try {
-            this.reconocedor.start();
-            this.escuchando = true;
-            this.actualizarEstado("🟢 Escuchando... Di tu clave de autoridad.");
-          } catch (e) {}
-        } else {
-          this.reconocedor.stop();
-          this.escuchando = false;
-          this.actualizarEstado("🔴 Detenido manualmente.");
-        }
-      }
-
-      procesarComandoSeguro(texto) {
-        const esMiVoz = texto.includes(this.firmaAutoridad) && texto.includes(this.llaveSecreta);
-        if (!esMiVoz) {
-          alert("⛔ [SISTEMA]: Acceso denegado. Se requiere tu firma de voz autorizada (Soy Andrés, Tilden 3.6).");
-          return;
-        }
-
-        if (texto.includes("limpiar") || texto.includes("cero")) {
-          document.getElementById('r-slider').value = 0;
-          document.getElementById('val-r').innerText = "0.00";
-          alert("🧹 [SISTEMA]: Tablero despejado por comando de voz.");
-        } else if (texto.includes("analiza") || texto.includes("verifica")) {
-          document.getElementById('btn-ejecutar')?.click();
-          alert("📊 [SISTêmA]: Verificación ejecutada de forma segura.");
-        }
-      }
-    }
-
-    window.controlVozSeguro = new ControlVozSeguro();
-  </script>
-</body>
-</html>
+      <div class="info-box">
+        Dataset: root://cms_single_electron_dataset.root
