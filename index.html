@@ -127,6 +127,12 @@
       margin-bottom: 10px;
       line-height: 1.45;
     }
+    .format-hint {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
     .metrics-row {
       margin-top: 8px;
       font-size: 11px;
@@ -213,9 +219,10 @@
     <div class="card">
       <div class="card-title">📊 Pruebas del Simulador CERN/CMS (Convergencia y Residuos)</div>
       <div class="info-box">
-        Dataset: root://cms_single_electron_dataset.root (v3)<br>
+        Dataset de referencia: root://cms_single_electron_dataset.root (v3)<br>
         Ficheros: 132 .root (155.79 GB) | Muestra: N = 61,761 eventos<br>
-        Precisión (q): 0.11077 GeV | Residuo Medio Purificado: 0.0540 GeV
+        Precisión (q): 0.11077 GeV | Residuo Medio Purificado: 0.0540 GeV<br>
+        Nota: ejecuta una prueba numérica de convergencia acotada en navegador (no lee .root en vivo).
       </div>
 
       <div class="canvas-box" style="margin-bottom: 10px;">
@@ -223,12 +230,16 @@
       </div>
 
       <label for="input-datos-cern" style="display:block; font-size:11px; color:#cbd5e1; margin-bottom:4px;">
-        Ingrese o pegue datos / valores numéricos para ejecutar prueba:
+        Datos / valores numéricos para verificar:
       </label>
-      <textarea id="input-datos-cern" placeholder="Ej: 0.24, 0.25, 0.26, 0.255 o pegue telemetría/formato de prueba..."></textarea>
+      <div class="format-hint">
+        Formato: números separados por coma, espacio o punto y coma (ej. <code>0.24, 0.25, 0.26, 0.255</code> o referencias <code>0.11077, 0.0540, 0.256</code>).
+      </div>
+      <textarea id="input-datos-cern" placeholder="0.24, 0.25, 0.26, 0.255"></textarea>
 
-      <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
         <button id="btn-ejecutar" type="button">Ejecutar Prueba</button>
+        <button id="btn-ejemplo" class="btn-secondary" type="button">Cargar Formato</button>
         <span id="estado-cern" style="font-size: 11px; color: #34d399;">Listo para pruebas</span>
       </div>
 
@@ -329,7 +340,6 @@
       });
     }
 
-    // Campo Topológico 3D en malla wireframe
     const canvas3D = document.getElementById('canvasTopo3D');
     const ctx3D = canvas3D.getContext('2d');
     let phase = 0;
@@ -442,6 +452,11 @@
         slider.addEventListener('input', actualizarParametros);
       });
       actualizarParametros();
+
+      document.getElementById('btn-ejemplo').addEventListener('click', () => {
+        inputDatos.value = '0.24, 0.25, 0.26, 0.255';
+        estadoCern.textContent = 'Formato cargado';
+      });
 
       document.getElementById('btn-reiniciar').addEventListener('click', () => {
         rSlider.value = 0;
