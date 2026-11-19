@@ -21,6 +21,11 @@
       border-bottom: 1px solid #1e293b;
       padding-bottom: 10px;
       margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     h1 {
       font-size: 15px;
@@ -36,7 +41,7 @@
       border: 1px solid #1e293b;
       border-radius: 8px;
       padding: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .card-title {
       font-size: 12px;
@@ -53,7 +58,7 @@
       display: block;
       font-size: 11px;
       color: #cbd5e1;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
     .control-group input[type="range"] {
       width: 100%;
@@ -75,7 +80,7 @@
     .badge-danger { background: #7f1d1d; color: #f87171; border: 1px solid #dc2626; }
     textarea {
       width: 100%;
-      height: 60px;
+      height: 62px;
       background: #020617;
       border: 1px solid #334155;
       color: #38bdf8;
@@ -96,10 +101,16 @@
       font-weight: bold;
     }
     button:hover { background: #0369a1; }
+    .btn-secondary {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+    }
+    .btn-secondary:hover { background: #334155; }
     .canvas-box {
       background: #020617;
       border: 1px solid #1e293b;
-      height: 170px;
+      height: 175px;
       border-radius: 4px;
       position: relative;
       overflow: hidden;
@@ -113,8 +124,17 @@
       border-radius: 4px;
       font-size: 10px;
       color: #94a3b8;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       line-height: 1.45;
+    }
+    .metrics-row {
+      margin-top: 8px;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
   </style>
 </head>
@@ -122,10 +142,13 @@
 
   <div class="container">
     <header>
-      <h1>BANCO DE PRUEBAS: CONSTANTE DE TILDEN</h1>
-      <div class="meta">
-        Autor: Andrés Ñáñez Sierra | DNDA: 1-2026-11979 / 1-2026-126301
+      <div>
+        <h1>BANCO DE PRUEBAS: CONSTANTE DE TILDEN</h1>
+        <div class="meta">
+          Autor: Andrés Ñáñez Sierra | DNDA: 1-2026-11979 / 1-2026-126301
+        </div>
       </div>
+      <button id="btn-reiniciar" class="btn-secondary" type="button">Limpiar Pruebas</button>
     </header>
 
     <!-- PARÁMETROS DE CAMPO -->
@@ -138,13 +161,13 @@
       </div>
 
       <div class="control-group">
-        <label>Constante Tilden (Ñ): <span class="readout">3.60</span></label>
-        <input type="range" id="n-slider" min="1" max="10" step="0.1" value="3.6" disabled>
+        <label>Constante Tilden (Ñ): <span id="val-n" class="readout">3.60</span></label>
+        <input type="range" id="n-slider" min="1" max="10" step="0.1" value="3.6">
       </div>
 
       <div class="control-group">
-        <label>Frecuencia Base (F0): <span class="readout">117.072 Hz</span></label>
-        <input type="range" min="50" max="200" step="0.001" value="117.072" disabled>
+        <label>Frecuencia Base (F0): <span id="val-f0" class="readout">117.072 Hz</span></label>
+        <input type="range" id="f0-slider" min="50" max="200" step="0.001" value="117.072">
       </div>
 
       <div class="control-group">
@@ -152,7 +175,7 @@
         <input type="range" id="m-slider" min="0.1" max="5.0" step="0.1" value="1.0">
       </div>
 
-      <div style="margin-top: 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="metrics-row">
         <span>Métrica g00(r): <strong id="val-metrica" style="color: #38bdf8;">0.000</strong></span>
         <span>Schwarzschild Clásico: <span class="badge badge-danger">∞ (Singular)</span></span>
       </div>
@@ -165,8 +188,8 @@
     <!-- OPERADOR REGULARIZADO -->
     <div class="card">
       <div class="card-title">📐 OPERADOR REGULARIZADO ÑÁÑEZ</div>
-      <div style="font-size: 11px; color: #38bdf8; background: #020617; padding: 6px; border-radius: 4px;">
-        g00(r) = - M · (1 - Ñ / (r + Ñ))
+      <div style="font-size: 11px; color: #38bdf8; background: #020617; padding: 8px; border-radius: 4px;">
+        g00(r) = -M · (1 - Ñ / (r + Ñ))
       </div>
     </div>
 
@@ -199,7 +222,7 @@
         <canvas id="chartCernPruebas"></canvas>
       </div>
 
-      <label style="display:block; font-size:11px; color:#cbd5e1; margin-bottom:4px;">
+      <label for="input-datos-cern" style="display:block; font-size:11px; color:#cbd5e1; margin-bottom:4px;">
         Ingrese o pegue datos / valores numéricos para ejecutar prueba:
       </label>
       <textarea id="input-datos-cern" placeholder="Ej: 0.24, 0.25, 0.26, 0.255 o pegue telemetría/formato de prueba..."></textarea>
@@ -210,27 +233,40 @@
       </div>
 
       <div id="resultado-cern" style="margin-top: 8px; background: #020617; border: 1px solid #1e293b; padding: 8px; border-radius: 4px; font-size: 11px;">
-        <strong style="color: #4ade80;">✔ PRUEBA BASE ACTIVA</strong><br>
-        <span style="color: #38bdf8;">Constante:</span> Ñ = 3.6 | F0 = 117.072 Hz | <span style="color: #fbbf24;">Convergencia: 0.256</span>
+        <span style="color: #94a3b8;">Aún no se han ejecutado pruebas en esta sesión.</span>
       </div>
     </div>
   </div>
 
   <script>
-    const N_CONST = 3.6;
-    const F0_CONST = 117.072;
     const rLabels = [0.1, 0.5, 1.0, 2.0, 3.5, 5.0, 7.0, 10.0];
-
     let graficaCurvatura = null;
     let graficaCern = null;
 
-    function calcularG00(r, m) {
-      return -m * (1 - N_CONST / (r + N_CONST));
+    function escaparHtml(texto) {
+      const div = document.createElement('div');
+      div.textContent = texto;
+      return div.innerHTML;
+    }
+
+    function obtenerParametros() {
+      const r = parseFloat(document.getElementById('r-slider')?.value ?? 0);
+      const n = parseFloat(document.getElementById('n-slider')?.value ?? 3.6);
+      const f0 = parseFloat(document.getElementById('f0-slider')?.value ?? 117.072);
+      const m = parseFloat(document.getElementById('m-slider')?.value ?? 1.0);
+      return { r, n, f0, m };
+    }
+
+    function calcularG00(r, m, n) {
+      const denom = r + n;
+      if (denom === 0) return 0;
+      return -m * (1 - n / denom);
     }
 
     function iniciarGraficas() {
       if (typeof Chart === 'undefined') return;
 
+      const { m, n } = obtenerParametros();
       const ctxCurv = document.getElementById('chartCurvatura').getContext('2d');
       graficaCurvatura = new Chart(ctxCurv, {
         type: 'line',
@@ -238,7 +274,7 @@
           labels: rLabels,
           datasets: [{
             label: 'g00(r) Regularizado',
-            data: rLabels.map(r => calcularG00(r, 1.0)),
+            data: rLabels.map(x => calcularG00(x, m, n)),
             borderColor: '#38bdf8',
             backgroundColor: 'rgba(56, 189, 248, 0.15)',
             borderWidth: 2,
@@ -263,10 +299,10 @@
       graficaCern = new Chart(ctxCern, {
         type: 'line',
         data: {
-          labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6'],
+          labels: [],
           datasets: [{
             label: 'Convergencia CERN/CMS',
-            data: [0.242, 0.251, 0.256, 0.249, 0.258, 0.254],
+            data: [],
             borderColor: '#34d399',
             backgroundColor: 'rgba(52, 211, 153, 0.15)',
             borderWidth: 2,
@@ -301,7 +337,7 @@
     function renderizarTopologia3D() {
       const parent = canvas3D.parentElement;
       const w = parent ? parent.clientWidth - 12 : 300;
-      const h = parent ? parent.clientHeight - 12 : 156;
+      const h = parent ? parent.clientHeight - 12 : 163;
 
       if (w > 20 && h > 20) {
         if (canvas3D.width !== w) canvas3D.width = w;
@@ -310,8 +346,7 @@
 
       ctx3D.clearRect(0, 0, canvas3D.width, canvas3D.height);
 
-      const rVal = parseFloat(document.getElementById('r-slider')?.value || 0);
-      const mVal = parseFloat(document.getElementById('m-slider')?.value || 1);
+      const { r, n, m } = obtenerParametros();
       const rows = 9;
       const cols = 11;
 
@@ -327,8 +362,8 @@
         for (let j = 0; j < cols; j++) {
           const u = (j / (cols - 1)) * 2 - 1;
           const dist = Math.sqrt(u * u + v * v);
-          const reg = N_CONST / (dist * N_CONST + N_CONST + rVal * 0.2);
-          const zAlt = Math.cos(dist * 4.2 - phase) * 16 * reg * Math.min(mVal, 2.5);
+          const reg = n / (dist * n + n + r * 0.2);
+          const zAlt = Math.cos(dist * 4.2 - phase) * 16 * reg * Math.min(m, 2.5);
 
           const xRot = u * cosA - v * sinA;
           const yRot = u * sinA + v * cosA;
@@ -371,41 +406,66 @@
       renderizarTopologia3D();
 
       const rSlider = document.getElementById('r-slider');
+      const nSlider = document.getElementById('n-slider');
+      const f0Slider = document.getElementById('f0-slider');
       const mSlider = document.getElementById('m-slider');
+
       const valR = document.getElementById('val-r');
+      const valN = document.getElementById('val-n');
+      const valF0 = document.getElementById('val-f0');
       const valM = document.getElementById('val-m');
       const valMetrica = document.getElementById('val-metrica');
       const badgeConv = document.getElementById('badge-conv');
+      const inputDatos = document.getElementById('input-datos-cern');
+      const estadoCern = document.getElementById('estado-cern');
+      const resultadoCern = document.getElementById('resultado-cern');
 
       function actualizarParametros() {
-        const r = parseFloat(rSlider.value);
-        const m = parseFloat(mSlider.value);
-        const g00 = calcularG00(r, m);
-        const conv = (0.256 + (m - 1) * 0.004 - r * 0.001).toFixed(3);
+        const { r, n, f0, m } = obtenerParametros();
+        const g00 = calcularG00(r, m, n);
+        const conv = (0.256 + (m - 1) * 0.004 - r * 0.001 + (n - 3.6) * 0.002).toFixed(3);
 
         valR.textContent = r.toFixed(2);
+        valN.textContent = n.toFixed(2);
+        valF0.textContent = `${f0.toFixed(3)} Hz`;
         valM.textContent = m.toFixed(2);
         valMetrica.textContent = g00.toFixed(3);
         badgeConv.textContent = `✔ FIN. CONVERGENCIA FINITA: ${conv}`;
 
         if (graficaCurvatura) {
-          graficaCurvatura.data.datasets[0].data = rLabels.map(x => calcularG00(x, m));
+          graficaCurvatura.data.datasets[0].data = rLabels.map(x => calcularG00(x, m, n));
           graficaCurvatura.update();
         }
       }
 
-      rSlider.addEventListener('input', actualizarParametros);
-      mSlider.addEventListener('input', actualizarParametros);
+      [rSlider, nSlider, f0Slider, mSlider].forEach(slider => {
+        slider.addEventListener('input', actualizarParametros);
+      });
       actualizarParametros();
 
-      document.getElementById('btn-ejecutar').addEventListener('click', () => {
-        const rawText = document.getElementById('input-datos-cern').value.trim();
-        const estadoCern = document.getElementById('estado-cern');
-        const resultadoCern = document.getElementById('resultado-cern');
+      document.getElementById('btn-reiniciar').addEventListener('click', () => {
+        rSlider.value = 0;
+        nSlider.value = 3.6;
+        f0Slider.value = 117.072;
+        mSlider.value = 1.0;
+        inputDatos.value = '';
+        actualizarParametros();
 
+        if (graficaCern) {
+          graficaCern.data.labels = [];
+          graficaCern.data.datasets[0].data = [];
+          graficaCern.update();
+        }
+
+        estadoCern.textContent = 'Listo para pruebas';
+        resultadoCern.innerHTML = '<span style="color: #94a3b8;">Pruebas limpiadas. Listo para ingresar datos.</span>';
+      });
+
+      document.getElementById('btn-ejecutar').addEventListener('click', () => {
+        const { n, f0 } = obtenerParametros();
+        const rawText = inputDatos.value.trim();
         estadoCern.textContent = '⏳ Ejecutando prueba...';
 
-        // Extrae números si el usuario escribió valores, o calcula uno estable con Ñ = 3.6
         const nums = rawText
           .split(/[\s,;]+/)
           .map(v => parseFloat(v.replace(',', '.')))
@@ -432,10 +492,11 @@
           graficaCern.update();
         }
 
+        const entradaSegura = escaparHtml(rawText ? rawText.substring(0, 60) : 'Muestra estándar CERN/CMS');
         resultadoCern.innerHTML = `
           <strong style="color: #4ade80;">✔ PRUEBA EJECUTADA (SIN DIVERGENCIAS)</strong><br>
-          <span style="color: #94a3b8;">Entrada:</span> ${rawText ? rawText.substring(0, 60) : 'Muestra estándar CERN/CMS'}<br>
-          <span style="color: #38bdf8;">Parámetros:</span> Ñ = ${N_CONST} | F0 = ${F0_CONST} Hz<br>
+          <span style="color: #94a3b8;">Entrada:</span> ${entradaSegura}<br>
+          <span style="color: #38bdf8;">Parámetros:</span> Ñ = ${n.toFixed(2)} | F0 = ${f0.toFixed(3)} Hz<br>
           <span style="color: #fbbf24;">Resultado Convergencia:</span> ${convFinal}
         `;
         estadoCern.textContent = '✅ Prueba completada';
