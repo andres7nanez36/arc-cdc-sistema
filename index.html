@@ -75,7 +75,7 @@
     .badge-danger { background: #7f1d1d; color: #f87171; border: 1px solid #dc2626; }
     textarea {
       width: 100%;
-      height: 50px;
+      height: 55px;
       background: #020617;
       border: 1px solid #334155;
       color: #38bdf8;
@@ -99,7 +99,7 @@
     .canvas-box {
       background: #020617;
       border: 1px solid #1e293b;
-      height: 160px;
+      height: 165px;
       border-radius: 4px;
       position: relative;
       overflow: hidden;
@@ -107,6 +107,7 @@
     canvas {
       width: 100% !important;
       height: 100% !important;
+      display: block;
     }
     .info-box {
       background: #020617;
@@ -115,15 +116,8 @@
       border-radius: 4px;
       font-size: 10px;
       color: #94a3b8;
-      margin-bottom: 6px;
-    }
-    .voice-panel {
-      background: #020617;
-      border: 1px solid #334155;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
+      line-height: 1.45;
     }
   </style>
 </head>
@@ -137,16 +131,10 @@
       </div>
     </header>
 
-    <!-- PANEL DE VOZ SEGURO -->
-    <div class="voice-panel">
-      <button id="btn-activar-voz" style="background: #0284c7; padding: 8px 14px; font-size: 11px;">🎙️ Activar Control por Voz (Seguro)</button>
-      <span id="estado-voz-display" style="display: block; font-size: 9px; color: #94a3b8; margin-top: 4px;">Micrófono en reposo (Libre para visitantes)</span>
-    </div>
-
     <!-- PARÁMETROS DE CAMPO -->
     <div class="card">
       <div class="card-title">⚙️ PARÁMETROS DE CAMPO</div>
-      
+
       <div class="control-group">
         <label>Coordenada Radial (r): <span id="val-r" class="readout">0.00</span></label>
         <input type="range" id="r-slider" min="0" max="10" step="0.01" value="0">
@@ -154,7 +142,7 @@
 
       <div class="control-group">
         <label>Constante Tilden (Ñ): <span class="readout">3.60</span></label>
-        <input type="range" disabled value="3.6">
+        <input type="range" id="n-slider" disabled value="3.6">
       </div>
 
       <div class="control-group">
@@ -171,7 +159,7 @@
         <span>Métrica g00(r): <strong id="val-metrica" style="color: #38bdf8;">-6.733</strong></span>
         <span>Schwarzschild Clásico: <span class="badge badge-danger">∞ (Singular)</span></span>
       </div>
-      
+
       <div style="margin-top: 8px;">
         <span class="badge badge-success">✔ FIN. CONVERGENCIA FINITA: 0.256</span>
       </div>
@@ -193,7 +181,7 @@
       </div>
     </div>
 
-    <!-- TOPOLOGÍA 3D (Malla Wireframe Espacial Real) -->
+    <!-- TOPOLOGÍA 3D -->
     <div class="card">
       <div class="card-title">🌐 Topología 3D del Nodo de Coherencia</div>
       <div class="canvas-box">
@@ -201,8 +189,4 @@
       </div>
     </div>
 
-    <!-- VALIDACIÓN EXPERIMENTAL CERN/CMS (Completa y Validada) -->
-    <div class="card">
-      <div class="card-title">🧪 Validación Experimental: Datos Abiertos CERN/CMS</div>
-      <div class="info-box">
-        Dataset: root://cms_single_electron_dataset.root
+    <!-- VALID
