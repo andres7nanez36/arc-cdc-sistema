@@ -251,6 +251,10 @@
 
   <script>
     const rLabels = [0.1, 0.5, 1.0, 2.0, 3.5, 5.0, 7.0, 10.0];
+    const REF_RESIDUO_PURIFICADO = 0.0540;
+    const REF_PRECISION_Q = 0.11077;
+    const FREQ_NOMINAL = 117.072;
+
     let graficaCurvatura = null;
     let graficaCern = null;
 
@@ -260,11 +264,18 @@
       return div.innerHTML;
     }
 
+    function leerNumeroSeguro(id, valorPorDefecto) {
+      const el = document.getElementById(id);
+      if (!el) return valorPorDefecto;
+      const num = parseFloat(el.value);
+      return Number.isFinite(num) ? num : valorPorDefecto;
+    }
+
     function obtenerParametros() {
-      const r = parseFloat(document.getElementById('r-slider')?.value ?? 0);
-      const n = parseFloat(document.getElementById('n-slider')?.value ?? 3.6);
-      const f0 = parseFloat(document.getElementById('f0-slider')?.value ?? 117.072);
-      const m = parseFloat(document.getElementById('m-slider')?.value ?? 1.0);
+      const r = leerNumeroSeguro('r-slider', 0);
+      const n = leerNumeroSeguro('n-slider', 3.6);
+      const f0 = leerNumeroSeguro('f0-slider', FREQ_NOMINAL);
+      const m = leerNumeroSeguro('m-slider', 1.0);
       return { r, n, f0, m };
     }
 
@@ -356,11 +367,12 @@
 
       ctx3D.clearRect(0, 0, canvas3D.width, canvas3D.height);
 
-      const { r, n, m } = obtenerParametros();
+      const { r, n, f0, m } = obtenerParametros();
       const rows = 9;
       const cols = 11;
 
-      phase += 0.03;
+      const ratioFreq = Math.max(0.25, Math.min(2.5, f0 / FREQ_NOMINAL));
+      phase += 0.03 * ratioFreq;
       const ang = phase * 0.35;
       const cosA = Math.cos(ang);
       const sinA = Math.sin(ang);
@@ -461,7 +473,7 @@
       document.getElementById('btn-reiniciar').addEventListener('click', () => {
         rSlider.value = 0;
         nSlider.value = 3.6;
-        f0Slider.value = 117.072;
+        f0Slider.value = FREQ_NOMINAL;
         mSlider.value = 1.0;
         inputDatos.value = '';
         actualizarParametros();
@@ -484,7 +496,7 @@
         const nums = rawText
           .split(/[\s,;]+/)
           .map(v => parseFloat(v.replace(',', '.')))
-          .filter(v => !isNaN(v) && isFinite(v));
+          .filter(v => Number.isFinite(v));
 
         let valorPrueba;
         if (nums.length > 0) {
@@ -495,6 +507,8 @@
         }
 
         const convFinal = valorPrueba.toFixed(3);
+        const residuoRef = Math.abs(valorPrueba - REF_RESIDUO_PURIFICADO).toFixed(4);
+        const deltaQ = Math.abs(valorPrueba - REF_PRECISION_Q).toFixed(4);
 
         if (graficaCern) {
           const nuevaEtiqueta = `P${graficaCern.data.labels.length + 1}`;
@@ -512,7 +526,7 @@
           <strong style="color: #4ade80;">✔ PRUEBA EJECUTADA (SIN DIVERGENCIAS)</strong><br>
           <span style="color: #94a3b8;">Entrada:</span> ${entradaSegura}<br>
           <span style="color: #38bdf8;">Parámetros:</span> Ñ = ${n.toFixed(2)} | F0 = ${f0.toFixed(3)} Hz<br>
-          <span style="color: #fbbf24;">Resultado Convergencia:</span> ${convFinal}
+          <span style="color: #fbbf24;">Resultado Convergencia:</span> ${convFinal} | <span style="color: #34d399;">Residuo (vs 0.0540):</span> ${residuoRef} | <span style="color: #94a3b8;">Δq (vs 0.11077):</span> ${deltaQ}
         `;
         estadoCern.textContent = '✅ Prueba completada';
       });
