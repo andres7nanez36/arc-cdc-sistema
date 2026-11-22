@@ -6,141 +6,304 @@
   <title>BANCO DE PRUEBAS: CONSTANTE DE TILDEN</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
-    body {
-      background-color: #050b14;
-      color: #f8fafc;
-      font-family: monospace, sans-serif;
-      margin: 0;
-      padding: 15px;
+    :root {
+      --bg-main: #050b14;
+      --bg-card: #0f172a;
+      --bg-inset: #020617;
+      --border-subtle: #1e293b;
+      --border-strong: #334155;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-label: #cbd5e1;
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      margin: 0;
+      padding: 18px 14px 32px;
+      line-height: 1.45;
+    }
+
     .container {
-      max-width: 600px;
+      max-width: 720px;
       margin: 0 auto;
     }
+
     header {
-      border-bottom: 1px solid #1e293b;
-      padding-bottom: 10px;
-      margin-bottom: 15px;
+      background: linear-gradient(180deg, #0f172a 0%, #091120 100%);
+      border: 1px solid var(--border-subtle);
+      border-top: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
-    h1 {
-      font-size: 15px;
-      color: #38bdf8;
-      margin: 0 0 5px 0;
-    }
-    .meta {
+
+    .header-kicker {
       font-size: 10px;
-      color: #94a3b8;
-    }
-    .card {
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 14px;
-    }
-    .card-title {
-      font-size: 12px;
-      color: #38bdf8;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .control-group {
-      margin-bottom: 10px;
-    }
-    .control-group label {
-      display: block;
-      font-size: 11px;
-      color: #cbd5e1;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
       margin-bottom: 4px;
     }
+
+    h1 {
+      font-size: 16px;
+      color: var(--text-main);
+      margin: 0 0 4px 0;
+      letter-spacing: 0.02em;
+    }
+
+    .meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .grid-2 .card {
+      margin-bottom: 0;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .card-tag {
+      font-size: 10px;
+      color: var(--text-muted);
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .control-group {
+      margin-bottom: 11px;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-label);
+      margin-bottom: 4px;
+    }
+
     .control-group input[type="range"] {
       width: 100%;
-      accent-color: #38bdf8;
+      accent-color: var(--accent);
+      cursor: pointer;
     }
+
     .readout {
-      font-size: 11px;
-      color: #38bdf8;
-      float: right;
+      color: var(--accent);
+      font-weight: 700;
     }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .kpi-box {
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .kpi-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .kpi-value {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .formula-box {
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent);
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .formula-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
     .badge {
       display: inline-block;
       padding: 3px 8px;
       border-radius: 4px;
       font-size: 10px;
-      font-weight: bold;
+      font-weight: 700;
     }
-    .badge-success { background: #064e3b; color: #34d399; border: 1px solid #059669; }
-    .badge-danger { background: #7f1d1d; color: #f87171; border: 1px solid #dc2626; }
+
+    .badge-success {
+      background: rgba(6, 78, 59, 0.75);
+      color: var(--success);
+      border: 1px solid #059669;
+    }
+
+    .badge-danger {
+      background: rgba(127, 29, 29, 0.75);
+      color: var(--danger);
+      border: 1px solid #dc2626;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 10px;
+      color: var(--text-label);
+      margin-bottom: 4px;
+    }
+
+    input[type="text"],
     textarea {
       width: 100%;
-      height: 62px;
-      background: #020617;
-      border: 1px solid #334155;
-      color: #38bdf8;
+      background: var(--bg-inset);
+      border: 1px solid var(--border-strong);
+      color: var(--accent);
       padding: 8px;
-      border-radius: 4px;
+      border-radius: 6px;
+      font-family: inherit;
       font-size: 11px;
-      box-sizing: border-box;
+    }
+
+    textarea {
+      height: 60px;
       resize: vertical;
     }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
     button {
-      background: #0284c7;
-      color: white;
+      background: var(--accent-hover);
+      color: #ffffff;
       border: none;
       padding: 7px 12px;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
+      font-family: inherit;
       font-size: 11px;
-      font-weight: bold;
+      font-weight: 700;
+      transition: background 0.15s ease;
     }
-    button:hover { background: #0369a1; }
+
+    button:hover {
+      background: #0369a1;
+    }
+
     .btn-secondary {
       background: #1e293b;
       color: #e2e8f0;
-      border: 1px solid #334155;
+      border: 1px solid var(--border-strong);
     }
-    .btn-secondary:hover { background: #334155; }
+
+    .btn-secondary:hover {
+      background: #334155;
+    }
+
     .canvas-box {
-      background: #020617;
-      border: 1px solid #1e293b;
-      height: 175px;
-      border-radius: 4px;
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      height: 185px;
+      border-radius: 6px;
       position: relative;
       overflow: hidden;
       padding: 6px;
-      box-sizing: border-box;
     }
+
     .info-box {
-      background: #020617;
-      border: 1px solid #1e293b;
-      padding: 8px;
-      border-radius: 4px;
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      padding: 9px 11px;
+      border-radius: 6px;
       font-size: 10px;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin-bottom: 10px;
-      line-height: 1.45;
     }
-    .format-hint {
-      font-size: 10px;
-      color: #94a3b8;
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
-    .metrics-row {
-      margin-top: 8px;
+
+    .output-box {
+      margin-top: 10px;
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      padding: 9px 11px;
+      border-radius: 6px;
       font-size: 11px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
     }
   </style>
 </head>
@@ -149,17 +312,21 @@
   <div class="container">
     <header>
       <div>
+        <div class="header-kicker">Plataforma de Verificación Numérica</div>
         <h1>BANCO DE PRUEBAS: CONSTANTE DE TILDEN</h1>
         <div class="meta">
-          Autor: Andrés Ñáñez Sierra | DNDA: 1-2026-11979 / 1-2026-126301
+          Autor: Andrés Ñáñez Sierra | Registro DNDA: 1-2026-11979 / 1-2026-126301
         </div>
       </div>
-      <button id="btn-reiniciar" class="btn-secondary" type="button">Limpiar Pruebas</button>
+      <button id="btn-reiniciar" class="btn-secondary" type="button">Reiniciar Todo</button>
     </header>
 
-    <!-- PARÁMETROS DE CAMPO -->
+    <!-- 1. PARÁMETROS DE CAMPO Y OPERADOR -->
     <div class="card">
-      <div class="card-title">⚙️ PARÁMETROS DE CAMPO</div>
+      <div class="card-header">
+        <span class="card-title">01. Parámetros de Campo y Regularización</span>
+        <span class="card-tag">Métrica g00(r)</span>
+      </div>
 
       <div class="control-group">
         <label>Coordenada Radial (r): <span id="val-r" class="readout">0.00</span></label>
@@ -181,70 +348,113 @@
         <input type="range" id="m-slider" min="0.1" max="5.0" step="0.1" value="1.0">
       </div>
 
-      <div class="metrics-row">
-        <span>Métrica g00(r): <strong id="val-metrica" style="color: #38bdf8;">0.000</strong></span>
-        <span>Schwarzschild Clásico: <span class="badge badge-danger">∞ (Singular)</span></span>
-      </div>
-
-      <div style="margin-top: 8px;">
-        <span id="badge-conv" class="badge badge-success">✔ FIN. CONVERGENCIA FINITA: 0.256</span>
-      </div>
-    </div>
-
-    <!-- OPERADOR REGULARIZADO -->
-    <div class="card">
-      <div class="card-title">📐 OPERADOR REGULARIZADO ÑÁÑEZ</div>
-      <div style="font-size: 11px; color: #38bdf8; background: #020617; padding: 8px; border-radius: 4px;">
+      <div class="formula-box">
         g00(r) = -M · (1 - Ñ / (r + Ñ))
+        <div class="formula-sub">Operador Regularizado Ñáñez: elimina la divergencia en r → 0 manteniendo acotamiento finito.</div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-box">
+          <span class="kpi-label">Métrica g00(r) Actual</span>
+          <span id="val-metrica" class="kpi-value">0.000</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Schwarzschild Clásico</span>
+          <span class="badge badge-danger">∞ (Singular)</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Estado de Convergencia</span>
+          <span id="badge-conv" class="badge badge-success">✔ FINITA: 0.256</span>
+        </div>
       </div>
     </div>
 
-    <!-- GRÁFICA DE LA CONSTANTE / CURVATURA RADIAL -->
+    <!-- 2. PROBADOR DE ACOPLAMIENTO EINSTEIN - PLANCK -->
     <div class="card">
-      <div class="card-title">📈 Curvatura Radial Comparativa (g00 vs r)</div>
-      <div class="canvas-box">
-        <canvas id="chartCurvatura"></canvas>
+      <div class="card-header">
+        <span class="card-title">02. Probador de Acoplamiento (ñ·m·c² = ħ·ω)</span>
+        <span class="card-tag">Escalamiento SI</span>
       </div>
-    </div>
 
-    <!-- CAMPO TOPOLÓGICO EN 3D -->
-    <div class="card">
-      <div class="card-title">🌐 Campo Topológico 3D del Nodo de Coherencia</div>
-      <div class="canvas-box">
-        <canvas id="canvasTopo3D"></canvas>
-      </div>
-    </div>
-
-    <!-- GRÁFICA Y PRUEBAS DEL SIMULADOR CERN/CMS -->
-    <div class="card">
-      <div class="card-title">📊 Pruebas del Simulador CERN/CMS (Convergencia y Residuos)</div>
       <div class="info-box">
-        Dataset de referencia: root://cms_single_electron_dataset.root (v3)<br>
+        Verifica si el par (m, ω) sostiene el factor objetivo <strong>ñ = 3.6</strong> con c = 2.99792458×10⁸ m/s y ħ = 1.054571817×10⁻³⁴ J·s. Al variar ambos en la misma razón, el residuo energético permanece en 0 J.
+      </div>
+
+      <div class="input-row">
+        <div class="field">
+          <label for="input-masa-si">Masa m [kg]:</label>
+          <input type="text" id="input-masa-si" value="9.1093837015e-31">
+        </div>
+        <div class="field">
+          <label for="input-omega-si">Frecuencia angular ω [rad/s]:</label>
+          <input type="text" id="input-omega-si" value="2.794801972e21">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button id="btn-verificar-si" type="button">Verificar Par (m, ω)</button>
+        <button id="btn-escalar-2x" class="btn-secondary" type="button">Escalar 2× (Sostiene 3.6)</button>
+        <button id="btn-desacoplar" class="btn-secondary" type="button">Duplicar solo m (Rompe 3.6)</button>
+      </div>
+
+      <div id="resultado-si" class="output-box">
+        <span style="color: var(--text-muted);">Presiona «Verificar Par (m, ω)» para auditar ñ_calc y el residuo energético.</span>
+      </div>
+    </div>
+
+    <!-- 3. VISUALIZACIÓN COMPARATIVA Y TOPOLOGÍA 3D -->
+    <div class="grid-2" style="margin-bottom: 14px;">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">03. Curvatura Radial</span>
+          <span class="card-tag">g00 vs r</span>
+        </div>
+        <div class="canvas-box">
+          <canvas id="chartCurvatura"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">04. Malla Topológica 3D</span>
+          <span class="card-tag">Nodo Coherencia</span>
+        </div>
+        <div class="canvas-box">
+          <canvas id="canvasTopo3D"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. SIMULADOR DE CONVERGENCIA CERN/CMS -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">05. Pruebas de Convergencia CERN/CMS</span>
+        <span class="card-tag">Auditoría de Residuos</span>
+      </div>
+
+      <div class="info-box">
+        Dataset de referencia: <code>root://cms_single_electron_dataset.root (v3)</code><br>
         Ficheros: 132 .root (155.79 GB) | Muestra: N = 61,761 eventos<br>
-        Precisión (q): 0.11077 GeV | Residuo Medio Purificado: 0.0540 GeV<br>
-        Nota: ejecuta una prueba numérica de convergencia acotada en navegador (no lee .root en vivo).
+        Precisión (q): 0.11077 GeV | Residuo Medio Purificado: 0.0540 GeV
       </div>
 
       <div class="canvas-box" style="margin-bottom: 10px;">
         <canvas id="chartCernPruebas"></canvas>
       </div>
 
-      <label for="input-datos-cern" style="display:block; font-size:11px; color:#cbd5e1; margin-bottom:4px;">
-        Datos / valores numéricos para verificar:
+      <label for="input-datos-cern" style="display:block; font-size:11px; color:var(--text-label); margin-bottom:4px;">
+        Serie numérica de entrada (separada por coma, espacio o punto y coma):
       </label>
-      <div class="format-hint">
-        Formato: números separados por coma, espacio o punto y coma (ej. <code>0.24, 0.25, 0.26, 0.255</code> o referencias <code>0.11077, 0.0540, 0.256</code>).
-      </div>
       <textarea id="input-datos-cern" placeholder="0.24, 0.25, 0.26, 0.255"></textarea>
 
-      <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+      <div class="btn-row">
         <button id="btn-ejecutar" type="button">Ejecutar Prueba</button>
-        <button id="btn-ejemplo" class="btn-secondary" type="button">Cargar Formato</button>
-        <span id="estado-cern" style="font-size: 11px; color: #34d399;">Listo para pruebas</span>
+        <button id="btn-ejemplo" class="btn-secondary" type="button">Cargar Muestra</button>
+        <span id="estado-cern" style="font-size: 11px; color: var(--success);">Listo para pruebas</span>
       </div>
 
-      <div id="resultado-cern" style="margin-top: 8px; background: #020617; border: 1px solid #1e293b; padding: 8px; border-radius: 4px; font-size: 11px;">
-        <span style="color: #94a3b8;">Aún no se han ejecutado pruebas en esta sesión.</span>
+      <div id="resultado-cern" class="output-box">
+        <span style="color: var(--text-muted);">Aún no se han ejecutado pruebas en esta sesión.</span>
       </div>
     </div>
   </div>
@@ -254,6 +464,10 @@
     const REF_RESIDUO_PURIFICADO = 0.0540;
     const REF_PRECISION_Q = 0.11077;
     const FREQ_NOMINAL = 117.072;
+
+    const C_SI = 299792458.0;
+    const HBAR_SI = 1.054571817e-34;
+    const M0_ELECTRON = 9.1093837015e-31;
 
     let graficaCurvatura = null;
     let graficaCern = null;
@@ -267,7 +481,7 @@
     function leerNumeroSeguro(id, valorPorDefecto) {
       const el = document.getElementById(id);
       if (!el) return valorPorDefecto;
-      const num = parseFloat(el.value);
+      const num = parseFloat(String(el.value).replace(',', '.'));
       return Number.isFinite(num) ? num : valorPorDefecto;
     }
 
@@ -358,7 +572,7 @@
     function renderizarTopologia3D() {
       const parent = canvas3D.parentElement;
       const w = parent ? parent.clientWidth - 12 : 300;
-      const h = parent ? parent.clientHeight - 12 : 163;
+      const h = parent ? parent.clientHeight - 12 : 173;
 
       if (w > 20 && h > 20) {
         if (canvas3D.width !== w) canvas3D.width = w;
@@ -438,6 +652,11 @@
       const valM = document.getElementById('val-m');
       const valMetrica = document.getElementById('val-metrica');
       const badgeConv = document.getElementById('badge-conv');
+
+      const inputMasaSi = document.getElementById('input-masa-si');
+      const inputOmegaSi = document.getElementById('input-omega-si');
+      const resultadoSi = document.getElementById('resultado-si');
+
       const inputDatos = document.getElementById('input-datos-cern');
       const estadoCern = document.getElementById('estado-cern');
       const resultadoCern = document.getElementById('resultado-cern');
@@ -452,7 +671,7 @@
         valF0.textContent = `${f0.toFixed(3)} Hz`;
         valM.textContent = m.toFixed(2);
         valMetrica.textContent = g00.toFixed(3);
-        badgeConv.textContent = `✔ FIN. CONVERGENCIA FINITA: ${conv}`;
+        badgeConv.textContent = `✔ FINITA: ${conv}`;
 
         if (graficaCurvatura) {
           graficaCurvatura.data.datasets[0].data = rLabels.map(x => calcularG00(x, m, n));
@@ -460,14 +679,63 @@
         }
       }
 
+      function evaluarAcoplamientoSI() {
+        const { n } = obtenerParametros();
+        const mSi = leerNumeroSeguro('input-masa-si', M0_ELECTRON);
+        const omegaSi = leerNumeroSeguro('input-omega-si', (n * M0_ELECTRON * C_SI * C_SI) / HBAR_SI);
+
+        if (mSi <= 0 || omegaSi <= 0) {
+          resultadoSi.innerHTML = '<span style="color: var(--danger);">Ingresa valores positivos mayores a 0 para m y ω.</span>';
+          return;
+        }
+
+        const energiaMc2 = mSi * C_SI * C_SI;
+        const energiaHw = HBAR_SI * omegaSi;
+        const nCalc = energiaHw / energiaMc2;
+        const residuoJ = (n * energiaMc2) - energiaHw;
+        const cumple = Math.abs(nCalc - n) < 1e-6;
+
+        const estadoColor = cumple ? '#4ade80' : '#f87171';
+        const estadoTexto = cumple
+          ? `✔ ACOPLAMIENTO VÁLIDO (ñ_calc = ${nCalc.toFixed(6)})`
+          : `✖ DESACOPLADO (ñ_calc = ${nCalc.toFixed(6)} ≠ ${n.toFixed(2)})`;
+
+        resultadoSi.innerHTML = `
+          <strong style="color: ${estadoColor};">${estadoTexto}</strong><br>
+          <span style="color: var(--text-muted);">Energía m·c²:</span> ${energiaMc2.toExponential(4)} J |
+          <span style="color: var(--text-muted);">Energía ħ·ω:</span> ${energiaHw.toExponential(4)} J<br>
+          <span style="color: #fbbf24;">Residuo R = ñ·m·c² - ħ·ω:</span> ${residuoJ.toExponential(3)} J
+        `;
+      }
+
       [rSlider, nSlider, f0Slider, mSlider].forEach(slider => {
         slider.addEventListener('input', actualizarParametros);
       });
       actualizarParametros();
 
+      document.getElementById('btn-verificar-si').addEventListener('click', evaluarAcoplamientoSI);
+
+      document.getElementById('btn-escalar-2x').addEventListener('click', () => {
+        const { n } = obtenerParametros();
+        const m2x = 2.0 * M0_ELECTRON;
+        const w2x = (n * m2x * C_SI * C_SI) / HBAR_SI;
+        inputMasaSi.value = m2x.toExponential(9);
+        inputOmegaSi.value = w2x.toExponential(9);
+        evaluarAcoplamientoSI();
+      });
+
+      document.getElementById('btn-desacoplar').addEventListener('click', () => {
+        const { n } = obtenerParametros();
+        const m2x = 2.0 * M0_ELECTRON;
+        const wBase = (n * M0_ELECTRON * C_SI * C_SI) / HBAR_SI;
+        inputMasaSi.value = m2x.toExponential(9);
+        inputOmegaSi.value = wBase.toExponential(9);
+        evaluarAcoplamientoSI();
+      });
+
       document.getElementById('btn-ejemplo').addEventListener('click', () => {
         inputDatos.value = '0.24, 0.25, 0.26, 0.255';
-        estadoCern.textContent = 'Formato cargado';
+        estadoCern.textContent = 'Muestra cargada';
       });
 
       document.getElementById('btn-reiniciar').addEventListener('click', () => {
@@ -476,6 +744,8 @@
         f0Slider.value = FREQ_NOMINAL;
         mSlider.value = 1.0;
         inputDatos.value = '';
+        inputMasaSi.value = M0_ELECTRON.toExponential(10);
+        inputOmegaSi.value = ((3.6 * M0_ELECTRON * C_SI * C_SI) / HBAR_SI).toExponential(9);
         actualizarParametros();
 
         if (graficaCern) {
@@ -485,7 +755,8 @@
         }
 
         estadoCern.textContent = 'Listo para pruebas';
-        resultadoCern.innerHTML = '<span style="color: #94a3b8;">Pruebas limpiadas. Listo para ingresar datos.</span>';
+        resultadoCern.innerHTML = '<span style="color: var(--text-muted);">Pruebas limpiadas. Listo para ingresar datos.</span>';
+        resultadoSi.innerHTML = '<span style="color: var(--text-muted);">Parámetros SI restablecidos al caso base (ñ = 3.6).</span>';
       });
 
       document.getElementById('btn-ejecutar').addEventListener('click', () => {
@@ -524,9 +795,11 @@
         const entradaSegura = escaparHtml(rawText ? rawText.substring(0, 60) : 'Muestra estándar CERN/CMS');
         resultadoCern.innerHTML = `
           <strong style="color: #4ade80;">✔ PRUEBA EJECUTADA (SIN DIVERGENCIAS)</strong><br>
-          <span style="color: #94a3b8;">Entrada:</span> ${entradaSegura}<br>
-          <span style="color: #38bdf8;">Parámetros:</span> Ñ = ${n.toFixed(2)} | F0 = ${f0.toFixed(3)} Hz<br>
-          <span style="color: #fbbf24;">Resultado Convergencia:</span> ${convFinal} | <span style="color: #34d399;">Residuo (vs 0.0540):</span> ${residuoRef} | <span style="color: #94a3b8;">Δq (vs 0.11077):</span> ${deltaQ}
+          <span style="color: var(--text-muted);">Entrada:</span> ${entradaSegura}<br>
+          <span style="color: var(--accent);">Parámetros:</span> Ñ = ${n.toFixed(2)} | F0 = ${f0.toFixed(3)} Hz<br>
+          <span style="color: #fbbf24;">Resultado Convergencia:</span> ${convFinal} |
+          <span style="color: #34d399;">Residuo (vs 0.0540):</span> ${residuoRef} |
+          <span style="color: var(--text-muted);">Δq (vs 0.11077):</span> ${deltaQ}
         `;
         estadoCern.textContent = '✅ Prueba completada';
       });
