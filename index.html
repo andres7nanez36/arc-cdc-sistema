@@ -37,6 +37,34 @@
       margin: 0 auto;
     }
 
+    .header-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 10px 14px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .header-banner h1 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .version-pill {
+      font-size: 11px;
+      color: var(--success);
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -91,6 +119,7 @@
 
     input[type="range"],
     input[type="number"],
+    input[type="text"],
     textarea {
       width: 100%;
       background: #0f172a;
@@ -100,7 +129,8 @@
       font-family: inherit;
     }
 
-    input[type="number"] {
+    input[type="number"],
+    input[type="text"] {
       padding: 6px 8px;
       font-size: 12px;
     }
@@ -162,12 +192,19 @@
       border-radius: 6px;
       font-size: 12px;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      overflow-x: auto;
     }
 
     .canvas-box {
       position: relative;
-      height: 185px;
+      height: 195px;
       width: 100%;
+    }
+
+    .canvas-box canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
     .info-box {
@@ -187,6 +224,11 @@
 </head>
 <body>
   <div class="container">
+    <div class="header-banner">
+      <h1>ARC / Ley del Todo — Sistema de Coherencia y Auditoría</h1>
+      <span class="version-pill">v2.1 Verificado • ñ = 3.6</span>
+    </div>
+
     <!-- 1. PARÁMETROS DEL MODELO -->
     <div class="card">
       <div class="card-header">
@@ -234,32 +276,33 @@
       </div>
     </div>
 
-    <!-- 2. AUDITORÍA DE ACOPLAMIENTO -->
+    <!-- 2. AUDITORÍA DE ACOPLAMIENTO SI -->
     <div class="card">
       <div class="card-header">
-        <span class="card-title">02. Auditoría de Acoplamiento (m, ω)</span>
+        <span class="card-title">02. Auditoría de Acoplamiento SI (ñ·m·c² = ħ·ω)</span>
         <span class="card-tag">Verificación ñ_calc</span>
       </div>
 
       <div class="grid-2">
         <div class="param-row">
           <label for="input-masa-si" style="display:block; font-size:11px; color:var(--text-label); margin-bottom:4px;">
-            Masa m (unidades normalizadas / SI)
+            Masa m (kg — por defecto electrón mₑ)
           </label>
-          <input id="input-masa-si" type="number" step="any" value="3.6" />
+          <input id="input-masa-si" type="text" value="9.1093837139e-31" />
         </div>
 
         <div class="param-row">
           <label for="input-omega-si" style="display:block; font-size:11px; color:var(--text-label); margin-bottom:4px;">
-            Frecuencia angular ω
+            Frecuencia angular ω (rad/s)
           </label>
-          <input id="input-omega-si" type="number" step="any" value="1.0" />
+          <input id="input-omega-si" type="text" value="2.7948389e21" />
         </div>
       </div>
 
       <div class="btn-row">
         <button id="btn-verificar-si" type="button">Verificar Par (m, ω) (Sostiene 3.6)</button>
         <button id="btn-desacoplar" class="btn-secondary" type="button">Duplicar solo m (Rompe 3.6)</button>
+        <button id="btn-reset-electron" class="btn-secondary" type="button">Restaurar Electrón Base</button>
       </div>
 
       <div id="resultado-si" class="output-box">
@@ -332,10 +375,12 @@
 
     const C_SI = 299792458.0;
     const HBAR_SI = 1.054571817e-34;
-    const M0_ELECTRON = 9.1093837015e-31;
+    const M0_ELECTRON = 9.1093837139e-31;
+    const OMEGA_ELECTRON_BASE = (3.6 * M0_ELECTRON * C_SI * C_SI) / HBAR_SI;
 
     let graficaCurvatura = null;
     let graficaCern = null;
+    let phase = 0;
 
     function escaparHtml(texto) {
       const div = document.createElement('div');
@@ -346,7 +391,7 @@
     function leerNumeroSeguro(id, valorPorDefecto) {
       const el = document.getElementById(id);
       if (!el) return valorPorDefecto;
-      const num = parseFloat(String(el.value).replace(',', '.'));
+      const num = parseFloat(String(el.value).trim().replace(',', '.'));
       return Number.isFinite(num) ? num : valorPorDefecto;
     }
 
@@ -368,268 +413,43 @@
       if (typeof Chart === 'undefined') return;
 
       const { m, n } = obtenerParametros();
-      const ctxCurv = document.getElementById('chartCurvatura').getContext('2d');
-      graficaCurvatura = new Chart(ctxCurv, {
-        type: 'line',
-        data: {
-          labels: rLabels,
-          datasets: [{
-            label: 'g00(r) Regularizado',
-            data: rLabels.map(x => calcularG00(x, m, n)),
-            borderColor: '#38bdf8',
-            backgroundColor: 'rgba(56, 189, 248, 0.15)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.3,
-            pointRadius: 2.5
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } },
-            y: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } }
-          }
-        }
-      });
-
-      const ctxCern = document.getElementById('chartCernPruebas').getContext('2d');
-      graficaCern = new Chart(ctxCern, {
-        type: 'line',
-        data: {
-          labels: [],
-          datasets: [{
-            label: 'Convergencia CERN/CMS',
-            data: [],
-            borderColor: '#34d399',
-            backgroundColor: 'rgba(52, 211, 153, 0.15)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.25,
-            pointRadius: 3
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } },
-            y: {
-              min: 0.15,
-              max: 0.35,
-              ticks: { color: '#94a3b8', font: { size: 9 } },
-              grid: { color: '#1e293b' }
+      const elCurv = document.getElementById('chartCurvatura');
+      if (elCurv) {
+        const ctxCurv = elCurv.getContext('2d');
+        graficaCurvatura = new Chart(ctxCurv, {
+          type: 'line',
+          data: {
+            labels: rLabels,
+            datasets: [{
+              label: 'g00(r) Regularizado',
+              data: rLabels.map(x => calcularG00(x, m, n)),
+              borderColor: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.15)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3,
+              pointRadius: 2.5
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } },
+              y: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } }
             }
           }
-        }
-      });
-    }
-
-    const canvas3D = document.getElementById('canvasTopo3D');
-    const ctx3D = canvas3D.getContext('2d');
-    let phase = 0;
-
-    function renderizarTopologia3D() {
-      const parent = canvas3D.parentElement;
-      const w = parent ? parent.clientWidth - 12 : 300;
-      const h = parent ? parent.clientHeight - 12 : 173;
-
-      if (w > 20 && h > 20) {
-        if (canvas3D.width !== w) canvas3D.width = w;
-        if (canvas3D.height !== h) canvas3D.height = h;
-      }
-
-      ctx3D.clearRect(0, 0, canvas3D.width, canvas3D.height);
-
-      const { r, n, f0, m } = obtenerParametros();
-      const rows = 9;
-      const cols = 11;
-
-      const ratioFreq = Math.max(0.25, Math.min(2.5, f0 / FREQ_NOMINAL));
-      phase += 0.03 * ratioFreq;
-      const ang = phase * 0.35;
-      const cosA = Math.cos(ang);
-      const sinA = Math.sin(ang);
-      const puntos = [];
-
-      for (let i = 0; i < rows; i++) {
-        puntos[i] = [];
-        const v = (i / (rows - 1)) * 2 - 1;
-        for (let j = 0; j < cols; j++) {
-          const u = (j / (cols - 1)) * 2 - 1;
-          const dist = Math.sqrt(u * u + v * v);
-          const reg = n / (dist * n + n + r * 0.2);
-          const zAlt = Math.cos(dist * 4.2 - phase) * 16 * reg * Math.min(m, 2.5);
-
-          const xRot = u * cosA - v * sinA;
-          const yRot = u * sinA + v * cosA;
-
-          const px = canvas3D.width * 0.5 + xRot * canvas3D.width * 0.28 + yRot * canvas3D.width * 0.14;
-          const py = canvas3D.height * 0.55 + yRot * canvas3D.height * 0.18 - zAlt;
-
-          puntos[i][j] = { x: px, y: py };
-        }
-      }
-
-      ctx3D.strokeStyle = '#38bdf8';
-      ctx3D.lineWidth = 1.1;
-      for (let i = 0; i < rows; i++) {
-        ctx3D.beginPath();
-        for (let j = 0; j < cols; j++) {
-          const p = puntos[i][j];
-          if (j === 0) ctx3D.moveTo(p.x, p.y);
-          else ctx3D.lineTo(p.x, p.y);
-        }
-        ctx3D.stroke();
-      }
-
-      ctx3D.strokeStyle = 'rgba(56, 189, 248, 0.45)';
-      for (let j = 0; j < cols; j++) {
-        ctx3D.beginPath();
-        for (let i = 0; i < rows; i++) {
-          const p = puntos[i][j];
-          if (i === 0) ctx3D.moveTo(p.x, p.y);
-          else ctx3D.lineTo(p.x, p.y);
-        }
-        ctx3D.stroke();
-      }
-
-      requestAnimationFrame(renderizarTopologia3D);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      iniciarGraficas();
-      renderizarTopologia3D();
-
-      const rSlider = document.getElementById('r-slider');
-      const nSlider = document.getElementById('n-slider');
-      const f0Slider = document.getElementById('f0-slider');
-      const mSlider = document.getElementById('m-slider');
-
-      const valR = document.getElementById('val-r');
-      const valN = document.getElementById('val-n');
-      const valF0 = document.getElementById('val-f0');
-      const valM = document.getElementById('val-m');
-      const valMetrica = document.getElementById('val-metrica');
-      const badgeConv = document.getElementById('badge-conv');
-
-      const inputMasaSi = document.getElementById('input-masa-si');
-      const inputOmegaSi = document.getElementById('input-omega-si');
-      const resultadoSi = document.getElementById('resultado-si');
-
-      const btnVerificarSi = document.getElementById('btn-verificar-si');
-      const btnDesacoplar = document.getElementById('btn-desacoplar');
-
-      const inputDatos = document.getElementById('input-datos-cern');
-      const btnEjecutar = document.getElementById('btn-ejecutar');
-      const btnEjemplo = document.getElementById('btn-ejemplo');
-      const estadoCern = document.getElementById('estado-cern');
-      const resultadoCern = document.getElementById('resultado-cern');
-
-      function actualizarParametros() {
-        const { r, n, f0, m } = obtenerParametros();
-        const g00 = calcularG00(r, m, n);
-        const conv = (0.256 + (m - 1) * 0.004 - r * 0.001 + (n - 3.6) * 0.002).toFixed(3);
-
-        valR.textContent = r.toFixed(2);
-        valN.textContent = n.toFixed(2);
-        valF0.textContent = `${f0.toFixed(3)} Hz`;
-        valM.textContent = m.toFixed(2);
-        valMetrica.textContent = g00.toFixed(3);
-        badgeConv.textContent = `✔ FINITA: ${conv}`;
-
-        if (graficaCurvatura) {
-          graficaCurvatura.data.datasets[0].data = rLabels.map(x => calcularG00(x, m, n));
-          graficaCurvatura.update();
-        }
-      }
-
-      function evaluarAcoplamientoSI() {
-        const { n } = obtenerParametros();
-        const mSi = leerNumeroSeguro('input-masa-si', n);
-        const omegaSi = leerNumeroSeguro('input-omega-si', 1.0);
-
-        if (omegaSi === 0) {
-          resultadoSi.innerHTML = `<span style="color: var(--danger);">Error: ω no puede ser 0.</span>`;
-          return;
-        }
-
-        const nCalc = mSi / omegaSi;
-        const residuo = Math.abs(nCalc - n);
-        const sostiene = residuo < 1e-6;
-
-        resultadoSi.innerHTML =
-          `m = ${escaparHtml(mSi.toFixed(6))} | ω = ${escaparHtml(omegaSi.toFixed(6))}<br>` +
-          `ñ_calc = ${escaparHtml(nCalc.toFixed(6))} | Objetivo ñ = ${escaparHtml(n.toFixed(6))}<br>` +
-          `Residuo |ñ_calc - ñ| = ${escaparHtml(residuo.toExponential(3))} | ` +
-          `<span style="color:${sostiene ? 'var(--success)' : 'var(--danger)'};">` +
-          `${sostiene ? '✔ SOSTIENE CONSTANTE' : '✖ ROMPE ACOPLAMIENTO'}</span>`;
-      }
-
-      function ejecutarPruebaCern() {
-        const raw = inputDatos.value.trim();
-        const partes = raw.split(/[\s,;]+/).map(x => x.replace(',', '.')).filter(Boolean);
-        const nums = partes.map(Number).filter(v => Number.isFinite(v));
-
-        if (!nums.length) {
-          estadoCern.textContent = 'Sin datos válidos';
-          estadoCern.style.color = 'var(--danger)';
-          resultadoCern.innerHTML = `<span style="color: var(--danger);">Ingresa al menos un valor numérico válido.</span>`;
-          return;
-        }
-
-        const media = nums.reduce((acc, v) => acc + v, 0) / nums.length;
-        const diffRef = Math.abs(media - REF_RESIDUO_PURIFICADO);
-
-        estadoCern.textContent = `Ejecutado (N=${nums.length})`;
-        estadoCern.style.color = 'var(--success)';
-
-        resultadoCern.innerHTML =
-          `Muestras: ${escaparHtml(String(nums.length))} | Media: ${escaparHtml(media.toFixed(5))}<br>` +
-          `Ref. Residuo Purificado: ${REF_RESIDUO_PURIFICADO.toFixed(4)} GeV | ` +
-          `ΔRef: ${escaparHtml(diffRef.toFixed(5))} | Precisión q: ${REF_PRECISION_Q.toFixed(5)} GeV`;
-
-        if (graficaCern) {
-          graficaCern.data.labels = nums.map((_, idx) => `#${idx + 1}`);
-          graficaCern.data.datasets[0].data = nums;
-          graficaCern.update();
-        }
-      }
-
-      [rSlider, nSlider, f0Slider, mSlider].forEach(el => {
-        if (el) el.addEventListener('input', actualizarParametros);
-      });
-
-      if (btnVerificarSi) {
-        btnVerificarSi.addEventListener('click', evaluarAcoplamientoSI);
-      }
-
-      if (btnDesacoplar) {
-        btnDesacoplar.addEventListener('click', () => {
-          const actualM = leerNumeroSeguro('input-masa-si', 3.6);
-          inputMasaSi.value = (actualM * 2).toFixed(4);
-          evaluarAcoplamientoSI();
         });
       }
 
-      if (btnEjecutar) {
-        btnEjecutar.addEventListener('click', ejecutarPruebaCern);
-      }
-
-      if (btnEjemplo) {
-        btnEjemplo.addEventListener('click', () => {
-          inputDatos.value = '0.24, 0.25, 0.26, 0.255';
-          ejecutarPruebaCern();
-        });
-      }
-
-      actualizarParametros();
-    });
-  </script>
-</body>
-</html>
+      const elCern = document.getElementById('chartCernPruebas');
+      if (elCern) {
+        const ctxCern = elCern.getContext('2d');
+        graficaCern = new Chart(ctxCern, {
+          type: 'line',
+          data: {
+            labels: [],
+            datasets: [{
+              label: '
