@@ -1,4 +1,264 @@
-Sostiene 3.6)</button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARC / Ley del Todo — Simulador y Auditoría</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card: #111827;
+      --border: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-label: #cbd5e1;
+      --accent: #38bdf8;
+      --success: #34d399;
+      --danger: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 16px;
+      line-height: 1.45;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 720px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .card-tag {
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .param-row {
+      margin-bottom: 10px;
+    }
+
+    .param-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    input[type="range"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      background: #0f172a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    input[type="number"] {
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    textarea {
+      min-height: 64px;
+      padding: 8px;
+      font-size: 12px;
+      resize: vertical;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge-ok {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    button {
+      background: var(--accent);
+      color: #061322;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.btn-secondary {
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid #334155;
+    }
+
+    .output-box {
+      margin-top: 10px;
+      padding: 10px;
+      background: #090e1a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .canvas-box {
+      position: relative;
+      height: 185px;
+      width: 100%;
+    }
+
+    .info-box {
+      background: #090e1a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 11px;
+      color: var(--text-label);
+      margin-bottom: 10px;
+    }
+
+    code {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 1. PARÁMETROS DEL MODELO -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">01. Parámetros del Modelo (ñ = 3.6)</span>
+        <span class="card-tag">ARC / CDC</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="param-row">
+          <div class="param-top">
+            <label for="r-slider">Radio / Escala (r)</label>
+            <span id="val-r">0.00</span>
+          </div>
+          <input id="r-slider" type="range" min="0" max="10" step="0.05" value="0" />
+        </div>
+
+        <div class="param-row">
+          <div class="param-top">
+            <label for="n-slider">Constante de Tilden (ñ)</label>
+            <span id="val-n">3.60</span>
+          </div>
+          <input id="n-slider" type="range" min="1" max="8" step="0.05" value="3.6" />
+        </div>
+
+        <div class="param-row">
+          <div class="param-top">
+            <label for="f0-slider">Frecuencia base (f₀)</label>
+            <span id="val-f0">117.072 Hz</span>
+          </div>
+          <input id="f0-slider" type="range" min="20" max="250" step="0.001" value="117.072" />
+        </div>
+
+        <div class="param-row">
+          <div class="param-top">
+            <label for="m-slider">Masa efectiva / Escala (m)</label>
+            <span id="val-m">1.00</span>
+          </div>
+          <input id="m-slider" type="range" min="0.1" max="5" step="0.05" value="1.0" />
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div>Métrica g00(r): <strong id="val-metrica">0.000</strong></div>
+        <div id="badge-conv" class="badge-ok">✔ FINITA: 0.256</div>
+      </div>
+    </div>
+
+    <!-- 2. AUDITORÍA DE ACOPLAMIENTO -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">02. Auditoría de Acoplamiento (m, ω)</span>
+        <span class="card-tag">Verificación ñ_calc</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="param-row">
+          <label for="input-masa-si" style="display:block; font-size:11px; color:var(--text-label); margin-bottom:4px;">
+            Masa m (unidades normalizadas / SI)
+          </label>
+          <input id="input-masa-si" type="number" step="any" value="3.6" />
+        </div>
+
+        <div class="param-row">
+          <label for="input-omega-si" style="display:block; font-size:11px; color:var(--text-label); margin-bottom:4px;">
+            Frecuencia angular ω
+          </label>
+          <input id="input-omega-si" type="number" step="any" value="1.0" />
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button id="btn-verificar-si" type="button">Verificar Par (m, ω) (Sostiene 3.6)</button>
         <button id="btn-desacoplar" class="btn-secondary" type="button">Duplicar solo m (Rompe 3.6)</button>
       </div>
 
@@ -9,7 +269,7 @@ Sostiene 3.6)</button>
 
     <!-- 3. VISUALIZACIÓN COMPARATIVA Y TOPOLOGÍA 3D -->
     <div class="grid-2" style="margin-bottom: 14px;">
-      <div class="card">
+      <div class="card" style="margin-bottom: 0;">
         <div class="card-header">
           <span class="card-title">03. Curvatura Radial</span>
           <span class="card-tag">g00 vs r</span>
@@ -19,7 +279,7 @@ Sostiene 3.6)</button>
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" style="margin-bottom: 0;">
         <div class="card-header">
           <span class="card-title">04. Malla Topológica 3D</span>
           <span class="card-tag">Nodo Coherencia</span>
@@ -262,7 +522,12 @@ Sostiene 3.6)</button>
       const inputOmegaSi = document.getElementById('input-omega-si');
       const resultadoSi = document.getElementById('resultado-si');
 
+      const btnVerificarSi = document.getElementById('btn-verificar-si');
+      const btnDesacoplar = document.getElementById('btn-desacoplar');
+
       const inputDatos = document.getElementById('input-datos-cern');
+      const btnEjecutar = document.getElementById('btn-ejecutar');
+      const btnEjemplo = document.getElementById('btn-ejemplo');
       const estadoCern = document.getElementById('estado-cern');
       const resultadoCern = document.getElementById('resultado-cern');
 
@@ -286,4 +551,85 @@ Sostiene 3.6)</button>
 
       function evaluarAcoplamientoSI() {
         const { n } = obtenerParametros();
-  
+        const mSi = leerNumeroSeguro('input-masa-si', n);
+        const omegaSi = leerNumeroSeguro('input-omega-si', 1.0);
+
+        if (omegaSi === 0) {
+          resultadoSi.innerHTML = `<span style="color: var(--danger);">Error: ω no puede ser 0.</span>`;
+          return;
+        }
+
+        const nCalc = mSi / omegaSi;
+        const residuo = Math.abs(nCalc - n);
+        const sostiene = residuo < 1e-6;
+
+        resultadoSi.innerHTML =
+          `m = ${escaparHtml(mSi.toFixed(6))} | ω = ${escaparHtml(omegaSi.toFixed(6))}<br>` +
+          `ñ_calc = ${escaparHtml(nCalc.toFixed(6))} | Objetivo ñ = ${escaparHtml(n.toFixed(6))}<br>` +
+          `Residuo |ñ_calc - ñ| = ${escaparHtml(residuo.toExponential(3))} | ` +
+          `<span style="color:${sostiene ? 'var(--success)' : 'var(--danger)'};">` +
+          `${sostiene ? '✔ SOSTIENE CONSTANTE' : '✖ ROMPE ACOPLAMIENTO'}</span>`;
+      }
+
+      function ejecutarPruebaCern() {
+        const raw = inputDatos.value.trim();
+        const partes = raw.split(/[\s,;]+/).map(x => x.replace(',', '.')).filter(Boolean);
+        const nums = partes.map(Number).filter(v => Number.isFinite(v));
+
+        if (!nums.length) {
+          estadoCern.textContent = 'Sin datos válidos';
+          estadoCern.style.color = 'var(--danger)';
+          resultadoCern.innerHTML = `<span style="color: var(--danger);">Ingresa al menos un valor numérico válido.</span>`;
+          return;
+        }
+
+        const media = nums.reduce((acc, v) => acc + v, 0) / nums.length;
+        const diffRef = Math.abs(media - REF_RESIDUO_PURIFICADO);
+
+        estadoCern.textContent = `Ejecutado (N=${nums.length})`;
+        estadoCern.style.color = 'var(--success)';
+
+        resultadoCern.innerHTML =
+          `Muestras: ${escaparHtml(String(nums.length))} | Media: ${escaparHtml(media.toFixed(5))}<br>` +
+          `Ref. Residuo Purificado: ${REF_RESIDUO_PURIFICADO.toFixed(4)} GeV | ` +
+          `ΔRef: ${escaparHtml(diffRef.toFixed(5))} | Precisión q: ${REF_PRECISION_Q.toFixed(5)} GeV`;
+
+        if (graficaCern) {
+          graficaCern.data.labels = nums.map((_, idx) => `#${idx + 1}`);
+          graficaCern.data.datasets[0].data = nums;
+          graficaCern.update();
+        }
+      }
+
+      [rSlider, nSlider, f0Slider, mSlider].forEach(el => {
+        if (el) el.addEventListener('input', actualizarParametros);
+      });
+
+      if (btnVerificarSi) {
+        btnVerificarSi.addEventListener('click', evaluarAcoplamientoSI);
+      }
+
+      if (btnDesacoplar) {
+        btnDesacoplar.addEventListener('click', () => {
+          const actualM = leerNumeroSeguro('input-masa-si', 3.6);
+          inputMasaSi.value = (actualM * 2).toFixed(4);
+          evaluarAcoplamientoSI();
+        });
+      }
+
+      if (btnEjecutar) {
+        btnEjecutar.addEventListener('click', ejecutarPruebaCern);
+      }
+
+      if (btnEjemplo) {
+        btnEjemplo.addEventListener('click', () => {
+          inputDatos.value = '0.24, 0.25, 0.26, 0.255';
+          ejecutarPruebaCern();
+        });
+      }
+
+      actualizarParametros();
+    });
+  </script>
+</body>
+</html>
