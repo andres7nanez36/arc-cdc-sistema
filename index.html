@@ -230,7 +230,7 @@
   <div class="container">
     <div class="header-banner">
       <h1>ARC / Ley del Todo — Sistema de Coherencia y Auditoría</h1>
-      <span class="version-pill">v2.2 Render Seguro • ñ = 3.6</span>
+      <span class="version-pill">v2.3 Reset Completo • ñ = 3.6</span>
     </div>
 
     <!-- 1. PARÁMETROS DEL MODELO -->
@@ -274,6 +274,10 @@
         </div>
       </div>
 
+      <div class="btn-row">
+        <button id="btn-reset-parametros" class="btn-secondary" type="button">Restaurar Valores Iniciales</button>
+      </div>
+
       <div class="status-bar">
         <div>Métrica g00(r): <strong id="val-metrica">0.000</strong></div>
         <div id="badge-conv" class="badge-ok">✔ FINITA: 0.256</div>
@@ -304,8 +308,8 @@
       </div>
 
       <div class="btn-row">
-        <button id="btn-verificar-si" type="button">Verificar Par (m, ω) (Sostiene 3.6)</button>
-        <button id="btn-desacoplar" class="btn-secondary" type="button">Duplicar solo m (Rompe 3.6)</button>
+        <button id="btn-verificar-si" type="button">Verificar Par (m, ω) (Sostiene ñ)</button>
+        <button id="btn-desacoplar" class="btn-secondary" type="button">Duplicar solo m (Rompe ñ)</button>
         <button id="btn-reset-electron" class="btn-secondary" type="button">Restaurar Electrón Base</button>
       </div>
 
@@ -376,11 +380,17 @@
     const REF_RESIDUO_PURIFICADO = 0.0540;
     const REF_PRECISION_Q = 0.11077;
     const FREQ_NOMINAL = 117.072;
+    const N_INICIAL = 3.6;
+    const M_INICIAL = 1.0;
+    const R_INICIAL = 0.0;
 
     const C_SI = 299792458.0;
     const HBAR_SI = 1.054571817e-34;
     const M0_ELECTRON = 9.1093837139e-31;
-    const OMEGA_ELECTRON_BASE = (3.6 * M0_ELECTRON * C_SI * C_SI) / HBAR_SI;
+
+    function calcularOmegaBase(nVal) {
+      return (nVal * M0_ELECTRON * C_SI * C_SI) / HBAR_SI;
+    }
 
     let graficaCurvatura = null;
     let graficaCern = null;
@@ -401,10 +411,10 @@
     }
 
     function obtenerParametros() {
-      const r = leerNumeroSeguro('r-slider', 0);
-      const n = leerNumeroSeguro('n-slider', 3.6);
+      const r = leerNumeroSeguro('r-slider', R_INICIAL);
+      const n = leerNumeroSeguro('n-slider', N_INICIAL);
       const f0 = leerNumeroSeguro('f0-slider', FREQ_NOMINAL);
-      const m = leerNumeroSeguro('m-slider', 1.0);
+      const m = leerNumeroSeguro('m-slider', M_INICIAL);
       return { r, n, f0, m };
     }
 
@@ -698,6 +708,7 @@
       const nSlider = document.getElementById('n-slider');
       const f0Slider = document.getElementById('f0-slider');
       const mSlider = document.getElementById('m-slider');
+      const btnResetParametros = document.getElementById('btn-reset-parametros');
 
       const valR = document.getElementById('val-r');
       const valN = document.getElementById('val-n');
@@ -743,7 +754,7 @@
       function evaluarAcoplamientoSI() {
         const { n } = obtenerParametros();
         const mSi = leerNumeroSeguro('input-masa-si', M0_ELECTRON);
-        const omegaSi = leerNumeroSeguro('input-omega-si', OMEGA_ELECTRON_BASE);
+        const omegaSi = leerNumeroSeguro('input-omega-si', calcularOmegaBase(n));
 
         if (mSi <= 0 || omegaSi <= 0) {
           resultadoSi.innerHTML = `<span style="color: var(--danger);">Error: m y ω deben ser mayores que 0.</span>`;
@@ -763,6 +774,18 @@
           `Residuo R = ñ·m·c² - ħ·ω = ${escaparHtml(residuoEnergia.toExponential(3))} J | ` +
           `<span style="color:${sostiene ? 'var(--success)' : 'var(--danger)'};">` +
           `${sostiene ? '✔ SOSTIENE CONSTANTE' : '✖ ROMPE ACOPLAMIENTO'}</span>`;
+      }
+
+      function restaurarValoresIniciales() {
+        if (rSlider) rSlider.value = String(R_INICIAL);
+        if (nSlider) nSlider.value = String(N_INICIAL);
+        if (f0Slider) f0Slider.value = String(FREQ_NOMINAL);
+        if (mSlider) mSlider.value = String(M_INICIAL);
+        actualizarParametros();
+
+        if (inputMasaSi) inputMasaSi.value = M0_ELECTRON.toExponential(10);
+        if (inputOmegaSi) inputOmegaSi.value = calcularOmegaBase(N_INICIAL).toExponential(7);
+        evaluarAcoplamientoSI();
       }
 
       function ejecutarPruebaCern() {
@@ -799,8 +822,19 @@
       }
 
       [rSlider, nSlider, f0Slider, mSlider].forEach(el => {
-        if (el) el.addEventListener('input', actualizarParametros);
+        if (el) {
+          el.addEventListener('input', () => {
+            actualizarParametros();
+            if (el === nSlider) {
+              evaluarAcoplamientoSI();
+            }
+          });
+        }
       });
+
+      if (btnResetParametros) {
+        btnResetParametros.addEventListener('click', restaurarValoresIniciales);
+      }
 
       if (btnVerificarSi) {
         btnVerificarSi.addEventListener('click', evaluarAcoplamientoSI);
@@ -816,8 +850,9 @@
 
       if (btnResetElectron) {
         btnResetElectron.addEventListener('click', () => {
+          const { n } = obtenerParametros();
           inputMasaSi.value = M0_ELECTRON.toExponential(10);
-          inputOmegaSi.value = OMEGA_ELECTRON_BASE.toExponential(7);
+          inputOmegaSi.value = calcularOmegaBase(n).toExponential(7);
           evaluarAcoplamientoSI();
         });
       }
