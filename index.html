@@ -230,7 +230,7 @@
   <div class="container">
     <div class="header-banner">
       <h1>ARC / Ley del Todo — Sistema de Coherencia y Auditoría</h1>
-      <span class="version-pill">v2.4 Verificado • ñ = 3.6</span>
+      <span class="version-pill">v2.5 Verificado • ñ = 3.6</span>
     </div>
 
     <!-- 1. PARÁMETROS DEL MODELO -->
@@ -775,7 +775,7 @@
           `<span style="white-space:nowrap;">m = ${escaparHtml(mSi.toExponential(6))} kg</span> | ` +
           `<span style="white-space:nowrap;">ω = ${escaparHtml(omegaSi.toExponential(6))} rad/s</span><br>` +
           `ñ_calc = (ħ·ω)/(m·c²) = ${escaparHtml(nCalc.toFixed(6))} | Objetivo ñ = ${escaparHtml(n.toFixed(6))}<br>` +
-          `Residuo R = ñ·m·c² - ħ·ω = ${escaparHtml(residuoEnergia.toExponential(3))} J | ` +
+          `Residuo R = ñ·m·c² - ħ·ω = <span style="white-space:nowrap;">${escaparHtml(residuoEnergia.toExponential(3))} J</span> | ` +
           `<span style="color:${sostiene ? 'var(--success)' : 'var(--danger)'};">` +
           `${sostiene ? '✔ SOSTIENE CONSTANTE' : '✖ ROMPE ACOPLAMIENTO'}</span>`;
       }
