@@ -199,6 +199,10 @@
       position: relative;
       height: 195px;
       width: 100%;
+      background: #090e1a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
     }
 
     .canvas-box canvas {
@@ -226,7 +230,7 @@
   <div class="container">
     <div class="header-banner">
       <h1>ARC / Ley del Todo — Sistema de Coherencia y Auditoría</h1>
-      <span class="version-pill">v2.1 Verificado • ñ = 3.6</span>
+      <span class="version-pill">v2.2 Render Seguro • ñ = 3.6</span>
     </div>
 
     <!-- 1. PARÁMETROS DEL MODELO -->
@@ -380,6 +384,7 @@
 
     let graficaCurvatura = null;
     let graficaCern = null;
+    let serieCernActual = [];
     let phase = 0;
 
     function escaparHtml(texto) {
@@ -409,47 +414,429 @@
       return -m * (1 - n / denom);
     }
 
-    function iniciarGraficas() {
-      if (typeof Chart === 'undefined') return;
+    function prepararCanvasHiDPI(canvas) {
+      if (!canvas) return null;
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.max(120, Math.floor(rect.width || canvas.parentElement.clientWidth || 300));
+      const h = Math.max(120, Math.floor(rect.height || canvas.parentElement.clientHeight || 195));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const targetW = Math.floor(w * dpr);
+      const targetH = Math.floor(h * dpr);
 
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, w, h };
+    }
+
+    function dibujarCurvaturaFallback() {
+      const canvas = document.getElementById('chartCurvatura');
+      const info = prepararCanvasHiDPI(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+      const { m, n } = obtenerParametros();
+      const valores = rLabels.map(x => calcularG00(x, m, n));
+
+      ctx.clearRect(0, 0, w, h);
+      const padL = 38;
+      const padR = 12;
+      const padT = 14;
+      const padB = 24;
+      const plotW = Math.max(20, w - padL - padR);
+      const plotH = Math.max(20, h - padT - padB);
+
+      const minV = Math.min(...valores, 0);
+      const maxV = Math.max(...valores, 0);
+      const span = Math.max(1e-6, maxV - minV);
+
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + (plotH * i) / 4;
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(padL + plotW, y);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      valores.forEach((val, idx) => {
+        const x = padL + (plotW * idx) / Math.max(1, valores.length - 1);
+        const y = padT + plotH - ((val - minV) / span) * plotH;
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px system-ui, sans-serif';
+      ctx.fillText(maxV.toFixed(2), 4, padT + 8);
+      ctx.fillText(minV.toFixed(2), 4, padT + plotH);
+      ctx.fillText(`r=${rLabels[0]}`, padL, h - 6);
+      ctx.fillText(`r=${rLabels[rLabels.length - 1]}`, padL + plotW - 28, h - 6);
+    }
+
+    function dibujarCernFallback() {
+      const canvas = document.getElementById('chartCernPruebas');
+      const info = prepararCanvasHiDPI(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+
+      ctx.clearRect(0, 0, w, h);
+      const padL = 38;
+      const padR = 12;
+      const padT = 14;
+      const padB = 24;
+      const plotW = Math.max(20, w - padL - padR);
+      const plotH = Math.max(20, h - padT - padB);
+
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + (plotH * i) / 4;
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(padL + plotW, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px system-ui, sans-serif';
+      ctx.fillText('0.35', 6, padT + 8);
+      ctx.fillText('0.15', 6, padT + plotH);
+
+      if (!serieCernActual.length) {
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('Sin serie graficada aún — presiona «Cargar Muestra» o «Ejecutar Prueba».', padL + 10, padT + plotH / 2);
+        return;
+      }
+
+      const minY = 0.15;
+      const maxY = 0.35;
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      serieCernActual.forEach((val, idx) => {
+        const x = padL + (plotW * idx) / Math.max(1, serieCernActual.length - 1);
+        const norm = Math.max(0, Math.min(1, (val - minY) / (maxY - minY)));
+        const y = padT + plotH - norm * plotH;
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = '#34d399';
+      serieCernActual.forEach((val, idx) => {
+        const x = padL + (plotW * idx) / Math.max(1, serieCernActual.length - 1);
+        const norm = Math.max(0, Math.min(1, (val - minY) / (maxY - minY)));
+        const y = padT + plotH - norm * plotH;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    function iniciarGraficas() {
       const { m, n } = obtenerParametros();
       const elCurv = document.getElementById('chartCurvatura');
-      if (elCurv) {
-        const ctxCurv = elCurv.getContext('2d');
-        graficaCurvatura = new Chart(ctxCurv, {
-          type: 'line',
-          data: {
-            labels: rLabels,
-            datasets: [{
-              label: 'g00(r) Regularizado',
-              data: rLabels.map(x => calcularG00(x, m, n)),
-              borderColor: '#38bdf8',
-              backgroundColor: 'rgba(56, 189, 248, 0.15)',
-              borderWidth: 2,
-              fill: true,
-              tension: 0.3,
-              pointRadius: 2.5
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } },
-              y: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } }
+      const elCern = document.getElementById('chartCernPruebas');
+
+      if (typeof Chart !== 'undefined') {
+        if (elCurv) {
+          const ctxCurv = elCurv.getContext('2d');
+          graficaCurvatura = new Chart(ctxCurv, {
+            type: 'line',
+            data: {
+              labels: rLabels,
+              datasets: [{
+                label: 'g00(r) Regularizado',
+                data: rLabels.map(x => calcularG00(x, m, n)),
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+                pointRadius: 2.5
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } },
+                y: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } }
+              }
             }
+          });
+        }
+
+        if (elCern) {
+          const ctxCern = elCern.getContext('2d');
+          graficaCern = new Chart(ctxCern, {
+            type: 'line',
+            data: {
+              labels: [],
+              datasets: [{
+                label: 'Convergencia CERN/CMS',
+                data: [],
+                borderColor: '#34d399',
+                backgroundColor: 'rgba(52, 211, 153, 0.15)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.25,
+                pointRadius: 3
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } },
+                y: {
+                  min: 0.15,
+                  max: 0.35,
+                  ticks: { color: '#94a3b8', font: { size: 9 } },
+                  grid: { color: '#1e293b' }
+                }
+              }
+            }
+          });
+        }
+      } else {
+        dibujarCurvaturaFallback();
+        dibujarCernFallback();
+      }
+    }
+
+    function iniciarTopologia3D() {
+      const canvas3D = document.getElementById('canvasTopo3D');
+      if (!canvas3D) return;
+
+      function frame() {
+        const info = prepararCanvasHiDPI(canvas3D);
+        if (!info) {
+          requestAnimationFrame(frame);
+          return;
+        }
+        const { ctx: ctx3D, w, h } = info;
+        ctx3D.clearRect(0, 0, w, h);
+
+        const { r, n, f0, m } = obtenerParametros();
+        const rows = 9;
+        const cols = 11;
+
+        const ratioFreq = Math.max(0.25, Math.min(2.5, f0 / FREQ_NOMINAL));
+        phase += 0.03 * ratioFreq;
+        const ang = phase * 0.35;
+        const cosA = Math.cos(ang);
+        const sinA = Math.sin(ang);
+        const puntos = [];
+
+        for (let i = 0; i < rows; i++) {
+          puntos[i] = [];
+          const v = (i / (rows - 1)) * 2 - 1;
+          for (let j = 0; j < cols; j++) {
+            const u = (j / (cols - 1)) * 2 - 1;
+            const dist = Math.sqrt(u * u + v * v);
+            const reg = n / (dist * n + n + r * 0.2);
+            const zAlt = Math.cos(dist * 4.2 - phase) * 16 * reg * Math.min(m, 2.5);
+
+            const xRot = u * cosA - v * sinA;
+            const yRot = u * sinA + v * cosA;
+
+            const px = w * 0.5 + xRot * w * 0.28 + yRot * w * 0.14;
+            const py = h * 0.55 + yRot * h * 0.18 - zAlt;
+
+            puntos[i][j] = { x: px, y: py };
           }
+        }
+
+        ctx3D.strokeStyle = '#38bdf8';
+        ctx3D.lineWidth = 1.2;
+        for (let i = 0; i < rows; i++) {
+          ctx3D.beginPath();
+          for (let j = 0; j < cols; j++) {
+            const p = puntos[i][j];
+            if (j === 0) ctx3D.moveTo(p.x, p.y);
+            else ctx3D.lineTo(p.x, p.y);
+          }
+          ctx3D.stroke();
+        }
+
+        ctx3D.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+        for (let j = 0; j < cols; j++) {
+          ctx3D.beginPath();
+          for (let i = 0; i < rows; i++) {
+            const p = puntos[i][j];
+            if (i === 0) ctx3D.moveTo(p.x, p.y);
+            else ctx3D.lineTo(p.x, p.y);
+          }
+          ctx3D.stroke();
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      iniciarGraficas();
+      iniciarTopologia3D();
+
+      const rSlider = document.getElementById('r-slider');
+      const nSlider = document.getElementById('n-slider');
+      const f0Slider = document.getElementById('f0-slider');
+      const mSlider = document.getElementById('m-slider');
+
+      const valR = document.getElementById('val-r');
+      const valN = document.getElementById('val-n');
+      const valF0 = document.getElementById('val-f0');
+      const valM = document.getElementById('val-m');
+      const valMetrica = document.getElementById('val-metrica');
+      const badgeConv = document.getElementById('badge-conv');
+
+      const inputMasaSi = document.getElementById('input-masa-si');
+      const inputOmegaSi = document.getElementById('input-omega-si');
+      const resultadoSi = document.getElementById('resultado-si');
+
+      const btnVerificarSi = document.getElementById('btn-verificar-si');
+      const btnDesacoplar = document.getElementById('btn-desacoplar');
+      const btnResetElectron = document.getElementById('btn-reset-electron');
+
+      const inputDatos = document.getElementById('input-datos-cern');
+      const btnEjecutar = document.getElementById('btn-ejecutar');
+      const btnEjemplo = document.getElementById('btn-ejemplo');
+      const estadoCern = document.getElementById('estado-cern');
+      const resultadoCern = document.getElementById('resultado-cern');
+
+      function actualizarParametros() {
+        const { r, n, f0, m } = obtenerParametros();
+        const g00 = calcularG00(r, m, n);
+        const conv = (0.256 + (m - 1) * 0.004 - r * 0.001 + (n - 3.6) * 0.002).toFixed(3);
+
+        valR.textContent = r.toFixed(2);
+        valN.textContent = n.toFixed(2);
+        valF0.textContent = `${f0.toFixed(3)} Hz`;
+        valM.textContent = m.toFixed(2);
+        valMetrica.textContent = g00.toFixed(3);
+        badgeConv.textContent = `✔ FINITA: ${conv}`;
+
+        if (graficaCurvatura) {
+          graficaCurvatura.data.datasets[0].data = rLabels.map(x => calcularG00(x, m, n));
+          graficaCurvatura.update();
+        } else {
+          dibujarCurvaturaFallback();
+        }
+      }
+
+      function evaluarAcoplamientoSI() {
+        const { n } = obtenerParametros();
+        const mSi = leerNumeroSeguro('input-masa-si', M0_ELECTRON);
+        const omegaSi = leerNumeroSeguro('input-omega-si', OMEGA_ELECTRON_BASE);
+
+        if (mSi <= 0 || omegaSi <= 0) {
+          resultadoSi.innerHTML = `<span style="color: var(--danger);">Error: m y ω deben ser mayores que 0.</span>`;
+          return;
+        }
+
+        const energiaReposo = mSi * C_SI * C_SI;
+        const energiaCuantica = HBAR_SI * omegaSi;
+        const nCalc = energiaCuantica / energiaReposo;
+        const residuoEnergia = (n * energiaReposo) - energiaCuantica;
+        const errorRelativo = Math.abs(nCalc - n) / n;
+        const sostiene = errorRelativo < 1e-4;
+
+        resultadoSi.innerHTML =
+          `m = ${escaparHtml(mSi.toExponential(6))} kg | ω = ${escaparHtml(omegaSi.toExponential(6))} rad/s<br>` +
+          `ñ_calc = (ħ·ω)/(m·c²) = ${escaparHtml(nCalc.toFixed(6))} | Objetivo ñ = ${escaparHtml(n.toFixed(6))}<br>` +
+          `Residuo R = ñ·m·c² - ħ·ω = ${escaparHtml(residuoEnergia.toExponential(3))} J | ` +
+          `<span style="color:${sostiene ? 'var(--success)' : 'var(--danger)'};">` +
+          `${sostiene ? '✔ SOSTIENE CONSTANTE' : '✖ ROMPE ACOPLAMIENTO'}</span>`;
+      }
+
+      function ejecutarPruebaCern() {
+        const raw = inputDatos.value.trim();
+        const partes = raw.split(/[\s,;]+/).map(x => x.replace(',', '.')).filter(Boolean);
+        const nums = partes.map(Number).filter(v => Number.isFinite(v));
+
+        if (!nums.length) {
+          estadoCern.textContent = 'Sin datos válidos';
+          estadoCern.style.color = 'var(--danger)';
+          resultadoCern.innerHTML = `<span style="color: var(--danger);">Ingresa al menos un valor numérico válido.</span>`;
+          return;
+        }
+
+        serieCernActual = nums;
+        const media = nums.reduce((acc, v) => acc + v, 0) / nums.length;
+        const diffRef = Math.abs(media - REF_RESIDUO_PURIFICADO);
+
+        estadoCern.textContent = `Ejecutado (N=${nums.length})`;
+        estadoCern.style.color = 'var(--success)';
+
+        resultadoCern.innerHTML =
+          `Muestras: ${escaparHtml(String(nums.length))} | Media: ${escaparHtml(media.toFixed(5))}<br>` +
+          `Ref. Residuo Purificado: ${REF_RESIDUO_PURIFICADO.toFixed(4)} GeV | ` +
+          `ΔRef: ${escaparHtml(diffRef.toFixed(5))} | Precisión q: ${REF_PRECISION_Q.toFixed(5)} GeV`;
+
+        if (graficaCern) {
+          graficaCern.data.labels = nums.map((_, idx) => `#${idx + 1}`);
+          graficaCern.data.datasets[0].data = nums;
+          graficaCern.update();
+        } else {
+          dibujarCernFallback();
+        }
+      }
+
+      [rSlider, nSlider, f0Slider, mSlider].forEach(el => {
+        if (el) el.addEventListener('input', actualizarParametros);
+      });
+
+      if (btnVerificarSi) {
+        btnVerificarSi.addEventListener('click', evaluarAcoplamientoSI);
+      }
+
+      if (btnDesacoplar) {
+        btnDesacoplar.addEventListener('click', () => {
+          const actualM = leerNumeroSeguro('input-masa-si', M0_ELECTRON);
+          inputMasaSi.value = (actualM * 2).toExponential(6);
+          evaluarAcoplamientoSI();
         });
       }
 
-      const elCern = document.getElementById('chartCernPruebas');
-      if (elCern) {
-        const ctxCern = elCern.getContext('2d');
-        graficaCern = new Chart(ctxCern, {
-          type: 'line',
-          data: {
-            labels: [],
-            datasets: [{
-              label: '
+      if (btnResetElectron) {
+        btnResetElectron.addEventListener('click', () => {
+          inputMasaSi.value = M0_ELECTRON.toExponential(10);
+          inputOmegaSi.value = OMEGA_ELECTRON_BASE.toExponential(7);
+          evaluarAcoplamientoSI();
+        });
+      }
+
+      if (btnEjecutar) {
+        btnEjecutar.addEventListener('click', ejecutarPruebaCern);
+      }
+
+      if (btnEjemplo) {
+        btnEjemplo.addEventListener('click', () => {
+          inputDatos.value = '0.24, 0.25, 0.26, 0.255';
+          ejecutarPruebaCern();
+        });
+      }
+
+      actualizarParametros();
+      evaluarAcoplamientoSI();
+      dibujarCernFallback();
+    });
+  </script>
+</body>
+</html>
