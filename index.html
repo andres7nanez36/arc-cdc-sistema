@@ -230,7 +230,7 @@
   <div class="container">
     <div class="header-banner">
       <h1>ARC / Ley del Todo — Sistema de Coherencia y Auditoría</h1>
-      <span class="version-pill">v2.3 Reset Completo • ñ = 3.6</span>
+      <span class="version-pill">v2.4 Verificado • ñ = 3.6</span>
     </div>
 
     <!-- 1. PARÁMETROS DEL MODELO -->
@@ -523,7 +523,10 @@
 
       if (!serieCernActual.length) {
         ctx.fillStyle = '#64748b';
-        ctx.fillText('Sin serie graficada aún — presiona «Cargar Muestra» o «Ejecutar Prueba».', padL + 10, padT + plotH / 2);
+        ctx.textAlign = 'center';
+        ctx.fillText('Sin serie graficada aún.', padL + plotW / 2, padT + plotH / 2 - 7);
+        ctx.fillText('Pulsa «Cargar Muestra» o «Ejecutar Prueba».', padL + plotW / 2, padT + plotH / 2 + 9);
+        ctx.textAlign = 'left';
         return;
       }
 
@@ -769,7 +772,8 @@
         const sostiene = errorRelativo < 1e-4;
 
         resultadoSi.innerHTML =
-          `m = ${escaparHtml(mSi.toExponential(6))} kg | ω = ${escaparHtml(omegaSi.toExponential(6))} rad/s<br>` +
+          `<span style="white-space:nowrap;">m = ${escaparHtml(mSi.toExponential(6))} kg</span> | ` +
+          `<span style="white-space:nowrap;">ω = ${escaparHtml(omegaSi.toExponential(6))} rad/s</span><br>` +
           `ñ_calc = (ħ·ω)/(m·c²) = ${escaparHtml(nCalc.toFixed(6))} | Objetivo ñ = ${escaparHtml(n.toFixed(6))}<br>` +
           `Residuo R = ñ·m·c² - ħ·ω = ${escaparHtml(residuoEnergia.toExponential(3))} J | ` +
           `<span style="color:${sostiene ? 'var(--success)' : 'var(--danger)'};">` +
